@@ -1,0 +1,269 @@
+/* CSS Document */
+.hidden {
+  position:absolute;
+  left:0px;
+  top:-500px;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}
+
+#topNavMasterTable td {
+  font-family:Arial, Helvetica, sans-serif;
+  font-size:100.01%;
+}
+
+#topNavMasterTable a:link {
+  color:#002888;
+  text-decoration:underline;
+  font-weight:normal;
+}
+#topNavMasterTable a:visited {
+  color:#002888;
+  text-decoration:underline;
+  font-weight:normal;
+}
+#topNavMasterTable a:hover {
+  color:#000000;
+  text-decoration:underline;
+  font-weight:normal;
+}
+#topNavMasterTable a:active {
+  color:#000000;
+  text-decoration:underline;
+  font-weight:normal;
+}
+/*NEW: topNavBold styles*/
+a.topNav:link, a.topNav:visited,
+a.topNavBold:link, a.topNavBold:visited {
+  font-family:arial, helvetica, sans-serif;
+  text-decoration:none !important;
+}
+a.topNav:hover, a.topNav:active,
+a.topNavBold:hover, a.topNavBold:active  {
+  color:#002888 !important;
+  text-decoration:underline !important;
+}
+/*NEW: topNavBold styles*/
+a.topNavBold:link, a.topNavBold:visited,
+a.topNavBold:hover, a.topNavBold:active {
+  font-weight:bold !important;
+}
+a.subNavOff:link, a.subNavOff:visited, a.subNavOff:hover, a.subNavOff:active {
+  font-family:arial, helvetica, sans-serif;
+  text-decoration:underline;
+}
+a.subNavOn:link, a.subNavOn:visited, a.subNavOn:hover, a.subNavOn:active {
+  font-family:arial, helvetica, sans-serif;
+  text-decoration:none !important;
+  font-weight:bold !important;
+}
+span.subNavOn {
+  color:#002888;
+  font-weight:bold !important;
+}
+a.subNavOn:hover {
+  text-decoration:underline !important;
+}
+a.tabOffLink:link, a.tabOffLink:visited, a.tabOffLink:hover, a.tabOffLink:active {
+  text-decoration:none;
+}
+a.tabOffLink:hover {
+  text-decoration:underline;
+}
+
+#topNavMasterTable td.image {
+  display:inline;
+}
+
+.profileRow {
+  color:#666666;
+  font-size:70% !important;
+  padding:11px 9px;
+  font-weight:bold;
+}
+.helpRow {
+  color:#88898A;
+  padding:6px 9px 0px 9px;
+  font-weight:bold;
+}
+.subNav {
+  font-size:75% !important;
+  border-bottom:1px solid #CCCCCC;
+  color:#CCCCCC;
+  padding:6px 9px 5px 9px;
+}
+.subNavNoLine {
+  color:#999999;
+  padding:5px 9px 5px 9px;
+}
+.subNavEmpty {
+  font-size: 2px !important;
+  border-bottom:1px solid #CCCCCC;
+  color:#CCCCCC;
+  padding:0px;
+  line-height: 6px;
+}
+.breadCrumb {
+  color:#999999;
+  padding:6px 9px 0px 12px;
+  font-size:75% !important;
+}
+.topNavTabSpacer01 {
+  background:#CED7E9 url('../images/img_tabspacertop01.gif') no-repeat bottom right;
+}
+.topNavTabSpacer01a {
+  background:#CED7E9;
+}
+.topNavTabSpacer02 {
+  background:#002888 url('../images/img_tabspacertop02.gif') no-repeat bottom right;
+}
+.topNavTabSpacer02a{
+  background:#002888 url('../images/img_tabspacertop02a.gif') no-repeat bottom right;
+}
+
+.topNavTab01, .topNavTab02 {
+  padding:2px;
+  vertical-align:middle;
+  text-align:center;
+  color:#999999;
+  font-size:70% !important;
+}
+.topNavTab01 {
+  background-color:#cfd9ec;
+}
+.topNavTab02 {
+  background-color:#002888;
+}
+.topNavTab02 a:link, .topNavTab02 a:hover, .topNavTab02 a:active, .topNavTab02 a:visited  {
+  color:white !important;
+}
+
+.mainNav {
+  background-image: url('../images/bg_mainNav.gif');
+  background-repeat: repeat-x;
+  text-align: center;
+  background-color: #002888;
+  padding: 0px;
+  font-size:80% !important;
+}
+
+.mainNav a {
+  color:#FFFFFF !important;
+  text-decoration: none !important;
+  font-weight: bold !important;
+  font-family:Arial, Helvetica, sans-serif; /*NEW: changed font to match DI*/
+}
+.mainNav a:hover, .mainNav a:active  {
+  color:#00FFFF;
+  text-decoration: underline !important;
+}
+
+.mainNav div {
+  padding: 0.3em 1em 0.3em 1em;
+}
+
+.mainNavSelected {
+  font-size:80% !important;
+  background-image: url('../images/bg_mainNav_leftRound.gif');
+  background-repeat: no-repeat;
+  background-position: top left;
+  text-align: center;
+  margin: 0px;
+  /*border: 1px solid #ff0000;*/ /*NEW: this style removed*/
+}
+
+.mainNavSelectedRound {
+  background-image: url('../images/bg_mainNav_rightRound.gif') !important;
+  background-repeat: no-repeat;
+  background-position: top right;
+  /*border: 1px solid #ff0000;*/ /*NEW: this style removed*/
+  padding: 0.3em 0.5em 0.3em 0.5em;
+  display: block;
+  line-height: 16px;
+  color:#002888 !important;
+  text-decoration: none !important;
+  font-weight: bold !important;
+}
+
+.mainNavSelectedRound a:link, .mainNavSelectedRound a:active, .mainNavSelectedRound a:visited  {
+  color:#002888 !important;
+  /*text-decoration: none !important;*/ /*NEW: this style removed*/
+  text-decoration: underline; /*NEW: this style added*/
+  font-weight: bold !important;
+}
+
+.mainNavSelectedRound a:hover {
+  text-decoration: underline !important;
+  font-weight: bold;
+  color:#000 !important; /*NEW: black rollover state*/
+}
+
+.curve {
+  background-image: url('../images/img_tabspacernav02.gif');
+  background-repeat: no-repeat;
+  background-position: top left;
+}
+
+.line {
+  background-image: url('../images/img_tabspacernav01a.gif');
+  background-repeat: repeat-x;
+  background-position: top left;
+}
+
+.logoholder1 {
+  position: relative;
+  float: left;
+  text-align: left;
+}
+
+.logoholder2 {
+  top: 12px;
+  left: 12px;
+}
+
+.trfix {
+  /* removed formatting */
+}
+.closeholder {
+  padding-top: 12px;
+  font-size:75% !important;
+}
+
+.closeholder a:link, .closeholder a:visited, .closeholder a:hover, .closeholder a:active {
+  color: #000000 !important;
+}
+
+#signout {
+  background-image: url('../images/btn_signout.gif');
+  background-repeat: no-repeat;
+  background-position: center right;
+  padding-right: 18px;
+  margin-right: 5px;
+  padding-top: 1px;
+
+}
+
+#helpwiththispage {
+  background-image: url('../images/btn_help.gif');
+  background-repeat: no-repeat;
+  background-position: center left;
+  padding-left: 18px;
+  margin-left: 5px;
+  font-size:75% !important;
+}
+
+.breadCrumb #helpwiththispage {
+  /* exception for when HELP WITH THIS PAGE is in breadcrumb */
+  font-size:100% !important;
+}
+
+#close{
+  background-image: url('../images/btn_close.gif');
+  background-repeat: no-repeat;
+  background-position: center right;
+  padding-right: 18px;
+  margin-right: 5px;
+  padding-top: 1px;
+  color: #000000;
+}

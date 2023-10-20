@@ -1,0 +1,86 @@
+
+body
+{
+font-family:Arial,Helvetica,sans-serif;
+color:#000000;
+background-color:#ffffff;
+}
+tr {font-family:Arial,Helvetica,sans-serif;color:#000000;}
+td {font-family:Arial,Helvetica,sans-serif;color:#000000;}
+th {font-family:Arial,Helvetica,sans-serif;color:#000000;}
+a {font-family:Arial,Helvetica,sans-serif;color:#002888;}
+.nohoverbackground a {background-color:transparent !important}
+a.groupLink {font-size:75%;font-weight:bold;}
+a.bodyLink {font-size:75%;}
+input {font-family:"Courier New",sans-serif;font-size:10pt;}
+select {font-family:"Courier New",sans-serif;font-size:10pt;}
+.pageTitle {font-size:110%;color:#002888;line-height:1.21em;}
+.bodyText, .bodytext {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000}
+.bannerText{font-family:Arial,Helvetica,sans-serif;font-size:75%;font-weight:bold;color:#ffffff;}
+.breadCrumbRow {background-color:#dddddd;}
+B,.rbcBold {font-weight:bold;}
+.rbcMonospace {font-family:"Courier New",sans-serif;font-size:10pt;}
+.fieldLabel {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:bold;}
+.errorText {font-family:Arial,Helvetica,sans-serif;font-size:75%;font-weight:bold;color:#000000;}
+.errorTextRow {background-color:#ffcc00;}
+.warnText {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;}
+.infoText {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;}
+.sectionHead,.groupHead,.columnHead
+{
+font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:bold;
+}
+a.footerLink {font-size:60%;}
+.footerText,.note
+{
+font-family:Arial,Helvetica,sans-serif;font-size:66%;color:#000000;
+}
+.boldnote
+{
+font-family:Arial,Helvetica,sans-serif;font-size:66%;color:#000000;font-weight:bold;
+}
+.whiteNote
+{
+font-family:Arial,Helvetica,sans-serif;font-size:66%;color:#ffffff;
+}
+.actionPanelSection{background-color:#eceff3;}
+.noticeTableBorder {border-color:#ffcc00;}
+.noticeTableHeaderRow {background-color:#ffcc00}
+.noticeTableHeaderText {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:bold;line-height:22px;}
+.noticeTableRow {background-color:#eceff3;}
+.noticeTableText {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;}
+.noteRed {font-family:Arial,Helvetica,sans-serif;font-size:66%;color:#ff0000;}
+.centuraSkipNavHidden {position:absolute;left:0px;top:-500px;width:1px;height:1px;overflow:hidden;}
+.blueText {color:#002888;}
+.eOfferFooterSeparator {padding-top:7px;border-top:solid #002888 2px;}
+.eOfferFooterLOBText {word-spacing:20px;}
+
+.hidden, .Hidden {
+  position:absolute;
+  left:0px;
+  top:-500px;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}
+
+/***********************************
+ * Fix for IE8 image hover problem *
+ ***********************************/
+a img{padding:0}
+ 
+/*****************************************************************************/
+/* Added for OLB 1.1
+/*****************************************************************************/	
+/* RESET Styles to achieve the UOS "O" on Hybrid OLB/Blueprint pages */
+
+html,img, body,{margin: 0;padding: 0;border: 0;outline: 0; line-height:1em;/*font-weight: inherit;font-style: inherit;font-family: inherit;*/}
+img {border:0 none;}
+
+/* Added in as for OLB 1.1 to override nested css as a result of doctype update */
+.bodyText .errorTextRow {font-size:100%}
+.bodyText .bodyText {font-size:100%;}
+.bodyText .infoText {font-size:100%;}
+.bodyText .bodyLink {font-size:100%;}
+.bodyText .noticeTableHeaderText {font-size:100%;}
+.bodyText .noticeTableText {font-size:100%;}
+.errorText .errorText {font-size:100%;}

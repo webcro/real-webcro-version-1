@@ -1,0 +1,5 @@
+.tabCurrent{background-color:#000066;}
+.tabNotCurrent{background-color:#dddddd;color:#000066;}
+a.tabLink{font-family:arial,helvetica,sans-serif;line-height:12px;font-size:12px;text-decoration:none;color:#000066;font-weight:bold;}
+a.tabLink:hover {text-decoration:underline;}
+.tabText {font-family:arial,helvetica,sans-serif;line-height:12px;font-size:12px;color:#ffffff;font-weight:bold;}

@@ -1,0 +1,121 @@
+/*****************************************
+ * Custom CSS classes for Online Banking *
+ *****************************************/
+
+/**********************************
+ * Skipnav horizontal positioning *
+ **********************************/
+.skipnav{left:0px}
+
+/************************************************
+ * Disable background colour changing for links *
+ ************************************************/
+a {background-color: transparent !important}
+ 
+/****************************
+ * Page title float removal *
+ ****************************/
+#pagetitlearea {float:none !important}
+
+/************************
+ * Footer related links *
+ ************************/
+.globalfooter-relatedlinks-block ul li a.linkedtextandicon span{text-decoration:none}
+.globalfooter-relatedlinks-block ul li a.linkedtextandicon:visited span{color:#002888}
+.globalfooter-relatedlinks-block ul li a.linkedtextandicon:hover span,
+.globalfooter-relatedlinks-block ul li a.linkedtextandicon:active span,
+.globalfooter-relatedlinks-block ul li a.linkedtextandicon:focus span{color:#000;text-decoration:underline;background-color:transparent}
+
+/*******************
+ * Breadcrumb area *
+ *******************/
+#breadcrumbarea{margin:0}
+#layout.layout-111 #breadcrumbarea{float:left;width:768px}
+#layout.layout-011 #breadcrumbarea{float:none;width:auto}
+#layout.layout-110 #breadcrumbarea{float:left;width:768px}
+.template-narrow #layout.layout-011 #breadcrumbarea{float:left;width:768px}
+.template-narrow #layout.layout-110 #breadcrumbarea{float:left;width:584px}
+.template-legacy #layout.layout-111 #breadcrumbarea{float:left;width:798px}
+.template-legacy #layout.layout-011 #breadcrumbarea{float:left;width:798px}
+.template-legacy #layout.layout-110 #breadcrumbarea{float:left;width:792px}
+
+/************
+ * Left nav *
+ ************/
+#leftnav-olb{line-height:1.2em;font-size:.845em;margin:0 0 12px 0;clear:both}
+#leftnav-olb ul{margin:0;padding:0px;list-style:none;zoom:1}
+#leftnav-olb ul li{margin:0 0 0 15px;padding:5px 0 6px 0px;background: url(divider-bg.gif) top left repeat-x;position:relative;zoom:1}
+#leftnav-olb ul li a{color:#002888;text-decoration:none;}
+#leftnav-olb ul li a:visited{color:#002888;}
+#leftnav-olb ul li a:hover,
+#leftnav-olb ul li a:active,
+#leftnav-olb ul li a:focus{color:#000;text-decoration:underline;background-color:transparent}
+#leftnav-olb ul.leftnav-currentsection{border:1px solid #8996a6;margin:0 0 3px 0;padding:1px}
+#leftnav-olb ul li.leftnav-sectionheader{font-weight:bold;color:#fff;font-size:1em;line-height:1.2em;margin:0;padding:6px 12px 7px 15px;background: url(../images/navigation/leftnav/sectionheader-bg.gif) bottom left repeat-x;border:1px solid #c3cce0;margin:0 0 3px 0}
+#leftnav-olb ul.leftnav-currentsection li.leftnav-sectionheader{background: #09308d url(sectionheader-current-bg.gif) top left repeat-x;border:none;margin:0;font-size:1.09em}
+#leftnav-olb ul.leftnav-currentsection li.leftnav-sectionheader a{color:#fff}
+#leftnav-olb ul.leftnav-currentsection li.leftnav-sectionheader a:visited{color:#fff}
+#leftnav-olb ul.leftnav-currentsection li.leftnav-sectionheader a:hover,
+#leftnav-olb ul.leftnav-currentsection li.leftnav-sectionheader a:active,
+#leftnav-olb ul.leftnav-currentsection li.leftnav-sectionheader a:focus{color:#fff;text-decoration:underline;background-color:transparent}
+#leftnav-olb ul.leftnav-currentsection li.leftnav-currentsectionheader{}
+#leftnav-olb ul li.leftnav-path{background:#fff url(path-bg.gif) bottom left no-repeat;margin:0;padding:6px 12px 9px 15px}
+#leftnav-olb ul li.leftnav-lastpage{background:none}
+#leftnav-olb ul li.leftnav-firstpage{background:none}
+#leftnav-olb ul li.leftnav-currentpage{font-weight:bold;padding:5px 0px 6px 0px;}
+#leftnav-olb ul li.leftnav-currentpage ul li{font-weight:normal;padding:4px 12px 5px 0px;}
+#leftnav-olb ul li ul{padding:3px 0 0 0;}
+#leftnav-olb ul li ul li, 
+#leftnav-olb ul li.leftnav-currentpage ul li {margin:0 0 0 6px;padding:3px 12px 3px 7px;background: url(bullet-childpage.gif) 0 8px no-repeat;}
+#leftnav-olb ul li ul li ul li, 
+#leftnav-olb ul li ul li.leftnav-currentpage ul li{margin:0 0 0 2px;padding:3px 0px 3px 8px;background: url(bullet-childchildpage.gif) 0 9px no-repeat}
+#leftnav-olb ul li ul li.leftnav-currentpage{padding:3px 12px 3px 7px;}
+#leftnav-olb ul li ul li ul li.leftnav-currentpage{padding:3px 0px 3px 8px;}
+#leftnav-olb li.leftnav-sectionheader .leftnav-highlight{position:absolute;top:9px;left:3px;}
+#leftnav-olb li.leftnav-currentsectionheader .leftnav-highlight{position:absolute;top:10px;left:3px;}
+#leftnav-olb li.leftnav-sectionheader .leftnav-screenreaderimage{position:absolute;top:0;left:0;}
+#leftnav-olb ul.leftnav-currentsection li.leftnav-currentsectionheader .leftnav-highlight{position:absolute;top:10px;left:4px;}
+#leftnav-olb li.leftnav-path .leftnav-highlight{position:absolute;top:10px;left:3px;}
+#leftnav-olb li.leftnav-currentpage .leftnav-highlight{position:absolute;top:6px;left:-17px}
+#leftnav-olb li ul li.leftnav-currentpage .leftnav-highlight{position:absolute;top:6px;left:-23px;}
+#leftnav-olb li ul li ul li.leftnav-currentpage .leftnav-highlight{position:absolute;top:6px;left:-32px;}
+
+/*********************
+ * Drop-down overlay *
+ *********************/
+.dropdown-link {width:15.5em; border:1px solid #9eb0d4; display:block; padding:2px 25px 2px 10px; position:relative; margin:0; background:#fff !important; text-decoration:none; font-size:.845em}
+.dropdown-link:hover, .dropdown-link:active, .dropdown-link:focus { text-decoration:underline !important}
+.dropdown-link span{text-decoration:none !important;}
+.dropdown-link img {position:absolute; top:10px; right:8px}
+.dropdown-closeicon{float:right;}
+.dropdown-closeicon img{vertical-align:middle;}
+.dropdown-container { width:15.95em;*width:15.85em; }
+.dropdown-content { background:#fff url(../images/dropdown/dropdown-content-bg.jpg) bottom left repeat-x; ; border-top:1px solid #9eb0d4; border-left:1px solid #9eb0d4; border-right:1px solid #9eb0d4; padding:10px 10px 1px 10px;}
+.dropdown-content a{text-decoration:none;}
+.dropdown-content a:hover{text-decoration:underline;color:#000;}
+.dropdown-content a.linkedtextandicon span{text-decoration:none;}
+.dropdown-content a.linkedtextandicon:hover span{text-decoration:underline;color:#000;}
+.dropdown-container ul.bullets-miniarrow {margin-left:0;margin-bottom:4px;font-size:.845em}
+.dropdown-container-bottom { background: url(../images/dropdown/dropdown-cap-bg.gif) bottom left no-repeat; padding:0 0 0 4px; font-size:1px; line-height:1; height:2px; }
+.dropdown-container-bottom span { display:block; background: #fff url(dropdown-cap-bg.gif) bottom right no-repeat; font-size:1px; line-height:1; height:2px; }
+.dropdown-container h4{margin:4px 0}
+.dropdown-container h6{margin:4px 0}
+.dropdown-container .divider-dash{margin:4px 0}
+ 
+/************************
+ * Callout header links *
+ ************************/
+.callout .callout-content h2 .callout-headerlink {font-size:.917em;font-weight:normal;}
+
+/********************************************************************
+ * Classes for "content framework" tables with no margin or borders *
+ ********************************************************************/
+table.contentframework.noborder {border:none;}
+table.contentframework.nomargin {margin:0;}
+
+/************************
+ * Pagination container *
+ ************************/
+.contentframework-pagination-container {text-align:center;margin:0 0 12px 0;}
+.contentframework-pagination-container .contentframework-pagination-actions {margin:0;}
+.contentframework-pagination-container ul.contentframework-required-description li img.contentframework-required-icon {position:relative;}

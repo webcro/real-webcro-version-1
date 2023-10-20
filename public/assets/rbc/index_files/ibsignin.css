@@ -1,0 +1,1458 @@
+/*-------------------------------------------- */
+/** Sign in Header */
+/*-------------------------------------------- */
+
+body {
+	font-family: Roboto,Arial,Helvetica,sans-serif !important;
+	-webkit-font-smoothing: antialiased;
+}
+
+header {
+	display: block;
+	min-width: 1222px;
+	font-family: Roboto,Arial,Helvetica,sans-serif;
+	-webkit-font-smoothing: antialiased;
+	color: #fff;
+}
+
+.dropdown-content li {
+	margin: 0;
+}
+
+.signinOverlay {
+	background-color: rgba(56, 56, 56, 0.8);
+	bottom: 0;
+	left: 0;
+	opacity: 0;
+	right: 0;
+	top: 0;
+	transition: opacity .2s;
+	z-index: 150;
+}
+
+.overlay-visible {
+	overflow: hidden;
+	position: fixed;
+	opacity: 1;
+}
+
+.overlay-visible-body {
+	overflow: hidden;
+}
+
+.signInHeader {
+	background-color: #006ac3;
+}
+
+.signInHeader a {
+	color: #fff;
+	line-height: 2.4rem;
+	font-size: 1.5rem;
+	display: inline-block;
+}
+
+.signInHeader a:hover {
+	text-decoration: none;
+}
+
+.signInHeader a:focus {
+	text-decoration: none;
+}
+
+.signInHeader .nav-header {
+	background: #434343;
+	height: 30px;
+}
+
+.signInHeader nav {
+	display: flex;
+	justify-content: space-between;
+	height: 100%;
+	padding: 0 15px;
+	width: 1200px;
+	max-width: 1200px;
+	margin: 0 auto;
+	font-weight: 300;
+}
+
+.signInHeader .dropdown-content {
+	line-height: 2.4rem;
+	font-size: 1.6rem;
+}
+
+.signInHeader .dropdown-content li {
+	margin: 0 0 10px;
+	line-height: 2.4rem;
+	font-size: 1.6rem;
+}
+
+.signInHeader .dropdown-content li:last-child {
+	margin: 0;
+}
+
+.signInHeader .dropdown-content a {
+	font-weight: 400;
+	line-height: 2.4rem;
+	font-size: 1.6rem;
+}
+.signInHeader .header {
+	max-width: 1200px;
+	padding: 15px;
+	margin: 0 auto;
+	background-color: #006ac3;
+	height: 90px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.signInHeader .header-icon img {
+	height: 60px;
+	vertical-align: middle;
+}
+
+.signInHeader .header-content {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+.signInHeader .header-content .search-trigger {
+	padding-bottom: 5px;
+}
+
+.signInHeader .header-content .search-trigger:focus {
+	outline-width: 2px !important;
+	outline-style: solid !important;
+	outline-color: #66afe9 !important;
+	outline-offset: 2px !important;
+}
+
+.signInHeader .header-content .search-text {
+	line-height: 3rem;
+	font-size: 2rem;
+	border-bottom: 1px solid #fff;
+	padding-bottom: 8px;
+	font-weight: 300;
+	margin-right: 30px;
+}
+
+.signInHeader .header-content .search-text img {
+	width: 24px;
+	height: 25px;
+	margin-right: 15px;
+}
+
+.signInHeader .global-nav {
+	display: flex;
+	align-items: center;
+	line-height: 2.7rem;
+}
+
+.signInHeader .global-nav #header-contact {
+	margin-right: 30px;
+	margin-top: 5px;
+	padding-bottom: 5px;
+}
+
+.signInHeader .global-nav #header-contact a {
+	position: relative;
+	font-size: 1.6rem;
+	color: #fff;
+	padding-left: 16px;
+}
+
+.signInHeader .global-nav #header-contact a:before {
+	content: url("/uos/3m/images/chevron-right-white.svg");
+	position: absolute;
+	left: 0;
+	display: inline-block;
+	width: 6px;
+	height: 10px;
+	line-height: 0;
+	top: .5rem;
+}
+
+.signInHeader .global-nav .dropdown-content ul {
+	display: flex;
+	flex-direction: column;
+}
+
+.signInHeader .global-nav .dropdown-content li {
+	cursor: pointer;
+	border-bottom: 1px solid #c4c8cc;
+	padding: 15px 0;
+	margin: 0;
+}
+
+.signInHeader .global-nav .dropdown-content li:first-child {
+	padding-top: 0;
+}
+
+.signInHeader .global-nav .dropdown-content li img {
+	width: 42px;
+	margin-right: 15px;
+}
+
+.signInHeader .global-nav .dropdown-content .active-lang span {
+	color: #000;
+}
+
+.signInHeader .global-nav .dropdown-text {
+	font-size: 1.6rem;
+	line-height: 2.4rem;
+	color: #fff;
+	display: flex;
+	align-items: center;
+}
+
+.signInHeader .global-nav .dropdown-text:focus {
+	outline-width: 2px !important;
+	outline-style: solid !important;
+	outline-color: #66afe9 !important;
+	outline-offset: 2px !important;
+}
+
+.signInHeader .global-nav .dropdown-text img {
+	border: 1px solid #fff;
+	width: 29px;
+	height: 15px;
+	margin-right: 5px;
+}
+
+.signInHeader .global-nav .dropdown-text:after {
+	content: url("/uos/3m/images/triangle-down-white.svg");
+	display: inline-block;
+	width: 8px;
+	height: 5px;
+	margin-left: 5px;
+	line-height: 0;
+	vertical-align: middle;
+}
+
+.signInHeader ul {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: flex-start;
+}
+
+.signInHeader ul li {
+	margin: 0 15px;
+	list-style: none;
+	line-height: 2.7rem;
+	font-size: 1.8rem;
+	position: relative;
+}
+
+.signInHeader ul li:first-child {
+	margin-left: 0px;
+}
+
+.signInHeader ul li button {
+	display: inline-block;
+	border: 0;
+	border-radius: 0;
+	background: 0 0;
+	padding: 0;
+	color: #fff;
+	line-height: 2.4rem;
+	font-size: 1.5rem;
+}
+
+header li:hover:not(.dropdown-overlay):before {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	display: inline-block;
+	width: 100%;
+	height: 2px;
+	background: #fedf01;
+}
+
+header .dropdown-overlay {
+	position: relative;
+}
+
+header .dropdown-overlay#lang-overlay {
+	padding: 5px 0;
+}
+
+header .dropdown-overlay .dropdown-content {
+	position: absolute;
+	display: block;
+	min-width: 250px;
+	padding: 20px;
+	z-index: 9999;
+	background-color: #fff;
+	box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1);
+	border: 1px solid #fff;
+	margin-top: 3px;
+	right: -17px;
+}
+
+header .dropdown-overlay .dropdown-content a {
+	color: #006ac3 !important;
+}
+
+header .dropdown-overlay .dropdown-content li a {
+	z-index: 200;
+	position: relative;
+}
+
+header .dropdown-overlay .dropdown-content li a.active-lang {
+	cursor: default;
+	pointer-events: none;
+}
+
+header .dropdown-overlay .dropdown-content.chevron-list li {
+	background-image: url("/uos/3m/images/chevron-right-blue.svg");
+	background-repeat: no-repeat;
+	background-size: 6px 10px;
+	background-position: 0 .43em;
+	padding-left: 15px;
+}
+
+header .dropdown-overlay .dropdown-content:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border: 1px solid #c4c8cc;
+}
+
+header .dropdown-overlay .dropdown-content:before {
+	content: "";
+	background: url("/uos/3m/images/tool-tip.svg");
+	background-size: 10px 10px;
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	position: absolute;
+	left: auto;
+	right: 15px;
+	top: -8px;
+	z-index: 100;
+}
+
+header .dropdown-content li:hover:before {
+	content: none;
+}
+
+header nav button:after {
+	content: url("/uos/3m/images/triangle-down-white.svg");
+	width: 8px;
+	height: 5px;
+	margin-left: 5px;
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 0;
+	line-height: 0;
+}
+
+header .signin-search-bar-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 130px;
+	background-color: #fff;
+	box-shadow: inset 0 3px 0 0 #006ac3;
+	border-bottom: 1px solid #c4c8cc;
+	z-index: 200;
+}
+
+header .signin-search-bar-inner {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	max-width: 1200px;
+	padding: 15px;
+	margin: 0 auto;
+}
+
+header .signin-search-logo {
+	margin-right: 200px;
+}
+
+header .signin-search-logo img {
+	height: 72px;
+}
+
+header .signin-search-form {
+	position: relative;
+	width: 100%;
+	font-weight: 300;
+}
+
+header .signin-search-form input {
+	width: calc(100% - 85px);
+	background: 0 0;
+	border: none;
+	padding: 12px;
+	padding-left: 40px;
+	color: #585858;
+	font-size: 2.4rem;
+	line-height: 3rem;
+	box-sizing: content-box;
+}
+
+header .signin-search-form button {
+	height: 20px;
+	width: 20px;
+	position: absolute;
+	right: 0;
+	top: 16px;
+	border: none;
+	background: 0 0;
+}
+
+header .signin-search-form:before {
+	content: url("/uos/3m/images/icons/search-signin-dark.svg");
+	position: absolute;
+	top: 12px;
+	width: 30px;
+}
+
+header .signin-search-form .search-close img {
+	height: 20px;
+	width: 20px;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+header :focus {
+	outline-width: 2px !important;
+	outline-style: solid !important;
+	outline-color: #66afe9 !important;
+	outline-offset: 2px !important;
+}
+
+/* Header Help Widget */
+.headerLinks {
+	float: right;
+	padding: 3px 0 16px;
+}
+
+.headerLinks ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.headerLinks li {
+	float: left;
+	padding: 0 14px;
+	line-height: 1.2;
+	border-right: 1px solid #c2c2c2;
+}
+
+.headerLinks li:last-child {
+	padding-right: 0;
+	border-right: 0;
+}
+
+.ie8 .headerLinks li + li + li {
+	padding-right: 0px !important;
+	border: 0;
+}
+
+.headerHelp {
+	display: inline-block;
+	float: right;
+	clear: both;
+	margin-bottom: 10px;
+	border: 1px solid #9eafd4;
+}
+
+.headerHelp form {
+	position: relative;
+	float: right;
+}
+
+.headerHelp input,
+.headerHelp button,
+.top5Dropdown {
+	float: left;
+}
+
+.headerHelp input {
+	font-size: 89.66%;
+	width: 215px;
+	height: 30px;
+	padding: 5px 10px;
+	border: 0;
+}
+
+.askBtn {
+	font-size: 93.1%;
+	height: 30px;
+	padding: 0 15px;
+}
+
+.askBtn:focus {
+	outline-width: 2px !important;
+	outline-style: solid !important;
+	outline-color: #66afe9 !important;
+	outline-offset: 2px !important;
+}
+
+.top5Dropdown {
+	position: relative;
+	border-left: 1px solid #9EAFD4;
+	margin: 0 2px;
+}
+
+.top5Dropdown .dropdown-toggle {
+	font-size: 86.21%;
+	margin: 0 2px;
+	padding: 5px 10px;
+	border: 0;
+	background-color: #fff;
+	line-height: 1.6;
+}
+
+.top5Dropdown .dropdown-toggle i {
+	font-size: 137.93%;
+	vertical-align: middle;
+}
+
+.top5Dropdown .dropdown-menu {
+	position: absolute;
+	top: 30px;
+	right: -5px;
+	left: auto;
+	width: 310px;
+	padding: 0 0 10px;
+	color: #09498d;
+}
+
+.top5Dropdown .dropdown-menu ul {
+	padding: 0 10px 0 20px;
+	margin: 0px;
+	float: left;
+	list-style: none;
+}
+
+.top5Dropdown .dropdown-menu li {
+	padding: 10px 0;
+}
+
+.top5Dropdown .dropdown-menu a {
+	margin-left: -5px;
+	font-size: 100%;
+	padding: 0;
+	white-space: normal;
+	color: #09498d;
+}
+
+.ie8 .top5Dropdown .dropdown-menu a {
+	margin-left: 0;
+}
+
+.top5Dropdown .dropdown-header {
+	font-size: 124.14%;
+	font-weight: 400;
+	position: relative;
+	padding: 15px 10px 15px 15px;
+	color: #282828;
+	background-color: #F4F5FA;
+	margin: 0;
+}
+
+.top5Dropdown .closeDropdown {
+	border: 1px solid #f4f5fa;
+}
+
+.top5Dropdown .closeDropdown:hover {
+	border: 1px solid #747474;
+}
+
+.top5Dropdown .closeDropdown:focus, .top5Dropdown .closeDropdown:active {
+	border: 1px dashed #747474;
+	color: #0659b0;
+}
+
+/*-------------------------------------------- */
+/** Sign in Menu bar */
+/*-------------------------------------------- */
+.mainNav {
+	font-weight: 700;
+	position: relative;
+	display: block;
+	clear: both;
+	width: 100%;
+	height: 30px;
+	padding: 8px 0 0;
+	background: url(/uos/common/images/navigation/mainnav/level1-bg-1px.gif) top left repeat-x #002888;
+	z-index: 10;
+}
+
+.mainNav ul {
+	display: inherit;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.mainNav ul li {
+	float: left;
+	padding: 0;
+	line-height: 1;
+	background: transparent;
+	padding: 0 15px 7px;
+	border-right: 1px solid #9eafd4;
+}
+
+.mainNav ul li .lastChild {
+	border-right: 0;
+}
+
+.mainNav ul li a {
+	color: #fff;
+	display: inline-block;
+}
+
+.mainNav ul li a:focus {
+	outline-width: 2px !important;
+	outline-style: solid !important;
+	outline-color: #fff !important;
+	outline-offset: 2px !important;
+}
+
+.mainNav ul li a:hover {
+	text-decoration: underline;
+}
+
+/* Signin Page unique styles*/
+#signInPage {
+	padding: 0;
+}
+
+
+/* SignIn Banner Block */
+#signInBanner {
+	margin-top: 24px;
+	min-height: 438px;
+	background-color: #006AC3;
+	background-size: cover;
+	padding: 0;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+
+#signInBanner #primarySignIn {
+	width: 43.15%;
+}
+
+#signInBanner #secondarySignIn {
+	width: calc( 100% - 43.15%);
+}
+
+#primarySignIn {
+	padding: 0px 0 0 77px;
+	border-right: 1px solid #2D84CD;
+	padding-bottom: 24px;
+}
+
+#primarySignIn .toolTip button:focus {
+	outline-width: 2px !important;
+	outline-style: solid !important;
+	outline-color: #fff !important;
+	outline-offset: 2px !important;
+}
+
+
+#primarySignIn h2 {
+	font-size: 165.52%;
+	line-height: 1.542;
+	font-family: "Fira Sans",Roboto,Arial,Helvetica,sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-weight: 400;
+	color: #fff;
+}
+
+#primarySignIn .signInLabel {
+	font-size: 110.34%;
+	line-height: 1.5;
+	font-weight: 400;
+	margin: 0;
+	color: #fff;
+}
+
+#primarySignIn .checkBoxLabel {
+	font-size: 96.55%;
+	line-height: 1.7;
+	font-weight: 400;
+	padding-left: 8px;
+	padding-right: 2px;
+	color: #fff;
+}
+
+#primarySignIn input[type=text],
+#primarySignIn input[type=password] {
+	height: 48px;
+	width: 350px;
+	border: 1px solid #0758ae;
+}
+
+#primarySignIn .yellowBtnLarge {
+	background-color: #FEDF01;
+	border-color: #FEDF01 !important;	
+	height: 48px;
+	width: 350px;
+	font-size: 14px;
+        font-weight: 500;	
+        line-height: 1.5;
+}
+
+#primarySignIn .yellowBtnLarge:hover {
+	background-color: #ffba00;
+	border-color: #ffba00 !important;
+}
+
+#primarySignIn .yellowBtnLarge:active {
+	background-color: #fbaa26;
+	border-color: #fbaa26 !important;
+}
+
+#primarySignIn .yellowBtnLarge:focus {
+	background-color: #ffba00;
+	border-color: #ffba00 !important;
+	outline-width: 1px !important;
+	outline-style: solid !important;
+	outline-color: #fff !important;
+	outline-offset: 5px !important;
+}
+
+#primarySignIn .formLinks ul {
+	list-style: none;
+	padding-left: 0;
+}
+
+#primarySignIn .formLinks ul li {
+	margin-bottom: 10px;
+}
+
+#primarySignIn .formLinks ul li ul li {
+   margin-left: 20px;  
+   margin-top: 4px;
+}
+
+#primarySignIn .formLinks a {
+	font-size: 96.55%;
+	line-height: 1.5;
+	color: #fff;
+}
+
+#primarySignIn .formLinks a i {
+	vertical-align: text-bottom;
+}
+
+#primarySignIn .formLinks a:focus {
+	outline-width: 2px !important;
+	outline-style: solid !important;
+	outline-color: #fff !important;
+	outline-offset: 2px !important;
+	text-decoration: none;
+}
+
+#primarySignIn .formLinksSecurityGuarantee a {
+	font-size: 96.55%;
+	line-height: 1.5;
+	color: #fff;
+	text-decoration: underline;
+}
+
+#primarySignIn .formLinksSecurityGuarantee a:focus {
+	outline-width: 2px !important;
+	outline-style: solid !important;
+	outline-color: #fff !important;
+	outline-offset: 2px !important;
+}
+
+#primarySignIn h2 {
+	margin-top: 23px;
+}
+
+#primarySignIn .formBlock_clientCardOrUserName {
+	padding-top: 10px;
+}
+
+#primarySignIn .formBlock_clientCardOrUserName .inputWrapper {
+	padding-top: 5px;
+}
+
+#primarySignIn .formBlock_clientCardOrUserName input[type=text] {
+	margin: 0;
+	margin-top: 1px;
+	height: 48px;
+}
+
+#primarySignIn .formBlock_clientCardOrUserName select {
+	margin: 0;
+	margin-top: 1px;
+	height: 48px;
+}
+
+#primarySignIn .formBlock_clientCardOrUserName .formLinks {
+	padding-top: 6px;
+}
+
+#primarySignIn .formBlock_password {
+	padding-top: 13px;
+}
+
+#primarySignIn .formBlock_password .inputWrapper {
+	padding-top: 7px;
+}
+
+#primarySignIn .formBlock_password input[type=password] {
+	margin: 0;
+	height: 48px;
+}
+
+#primarySignIn .formBlock_password .formLinks {
+	padding-top: 6px;
+}
+
+#primarySignIn .formBlock_rememberCheckbox {
+	padding-top: 19px;
+}
+
+#primarySignIn .formBlock_rememberCheckbox .checkBoxWrapper {
+	margin-left: 1px;
+}
+
+#primarySignIn .formBlock_mainSignIn {
+	padding-top: 21px;
+}
+
+#primarySignIn .formBlock_mainSignIn .yellowBtnLarge {
+	margin-left: 1px;
+}
+
+#primarySignIn .formLinksSecurityGuarantee {
+	display: flex;
+	justify-content: flex-start;
+	padding-top: 21px;
+}
+
+#primarySignIn .formLinksSecurityGuarantee .securityIcon {
+	width: 20px;
+	height: 20px;
+	background: url("/uos/3m/images/icons/lock-small.svg") no-repeat 0px 2px;
+}
+
+#primarySignIn span.icon_angleRightSmall {
+	display: inline-block;
+	width: 20px;
+	height: 15px;
+	background: url("/uos/3m/images/icons/angle-right-small.svg") no-repeat 50% 110%;
+}
+
+.userSelectionWrapper {
+	height: 50px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-top: 6px;
+}
+
+.inputSelectionWrapper {
+	width: 350px;
+}
+
+.editOptions {
+	padding: 0;
+	padding-bottom: 4px;
+	display: flex;
+	margin-right: 12px;
+	flex-direction: column;
+	justify-content: space-around;
+}
+
+#primarySignIn .formBlock_clientCardOrUserName input[type=text] {
+        font-size: 110.34%;
+        font-weight: 300;
+        color: #252525;
+        line-height: 1.5;
+}
+#primarySignIn .formBlock_clientCardOrUserName select {
+        font-size: 110.34%;
+        font-weight: 300;
+        color: #252525;
+	line-height: 1.5;
+}
+
+#primarySignIn .formBlock_password input[type=password] {
+	font-size: 110.34%;
+	font-weight: 300;
+	color: #252525;
+	line-height: 1.5;
+}
+
+#secondarySignIn p {
+	color: #fff;
+	font-size: 110.34%;
+	line-height: 1.5;
+}
+
+#secondarySignIn a {
+	color: #fff;
+	font-size: 110.34%;
+	line-height: 1.31;
+}
+#secondarySignIn h2 {
+	color: #fff;
+	font-size: 137.93%;
+	line-height: 1.5;
+	font-family: "Fira Sans",Roboto,Arial,Helvetica,sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-weight: 400;
+}
+
+#secondarySignIn #signinServicesSelector select {
+        font-size: .8em;
+        font-weight: 300;
+        line-height: 1.5;
+        color: #252525;
+	font-family: Roboto,Arial,Helvetica,sans-serif;
+}
+
+#signinEnrollWidget a {
+	text-decoration: underline;
+	font-size: 16px;
+	line-height: 1.5;
+	font-family: Roboto,Arial,Helvetica,sans-serif;
+}
+
+.secondarySignInWidget, .secondarySignInWidgetlinks {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.secondarySignInWidget {
+	border-bottom: 1px solid #2D84CD;
+}
+
+.secondarySignInWidget_right, .signinEnrollWidget_right {
+	display: flex;
+	flex-direction: column-reverse;
+}
+
+#secondarySignIn {
+	padding-left: 59px;
+	padding-right: 63px;
+}
+
+.secondarySignInWidget {
+	padding-left: 5px;
+	padding-right: 7px;
+}
+
+#signinEnrollWidget {
+	margin-top: 29px;
+}
+
+.signinEnrollWidget_left {
+	padding-bottom: 42px;
+}
+
+.signinEnrollWidget_right {
+	padding-bottom: 30px;
+}
+
+.secondarySignInWidget_left {
+	padding-top: 22px;
+	padding-bottom: 30px;
+}
+
+.secondarySignInWidget_right {
+	padding-bottom: 32px;
+}
+
+#signinEnrollWidget h2 {
+	margin: 0px;
+}
+
+#signinEnrollWidget .secondarySignInWidget_left_linkwrapper {
+	margin: 0px;
+	margin-top: 15px;
+}
+
+#signinServicesSelector h2 {
+	margin: 0px;
+}
+
+#signinServicesSelector .form-group {
+	margin: 0px;
+}
+
+.secondarySignInWidgetlinksTitle {
+	padding-top: 16px;
+}
+
+.secondarySignInWidgetlinksTitle h2 {
+	margin: 0px;
+}
+
+.secondarySignInWidgetlinks {
+	padding-top: 2px;
+}
+
+.secondarySignInWidgetlinks_wrapper {
+	padding-top: 12px;
+}
+
+/*-------------------------------------------- */
+/** Post SignIn page  */
+/*-------------------------------------------- */
+#rbunxcgi .selectAccount {
+	display: inline-block;
+	float: left;
+	width: 350px;
+	margin-bottom: 0;
+	padding: 12px 10px;
+	height: 45px;
+}
+
+.editOptions a {
+	display: block;
+	color: #fff;
+	font-size: 96.55%;
+	line-height: 1.5;
+	text-decoration: underline;
+}
+
+.removeItem a {
+	padding-top: 0;
+}
+
+
+#signinServicesSelector select {
+	padding: 12px 10px;
+	height: 48px;
+	border: 1px solid #0758ae;
+}
+
+#signinEnrollWidget .blueBtnChevron,
+.selectSec .blueBtnChevron {
+	background-color: #0659b0;
+	border: 1px solid #237edb;
+	margin-top: -1px;
+}
+
+#signinEnrollWidget .blueBtnChevron:focus,
+.selectSec .blueBtnChevron:focus {
+	outline-width: 2px !important;
+	outline-style: solid !important;
+	outline-color: #fff !important;
+	outline-offset: 2px !important;
+}
+
+#signinEnrollWidget .blueBtnChevron:hover,
+.selectSec .blueBtnChevron:hover {
+	border: 1px solid #a7cbf1;
+}
+
+.selectSec .blueBtnChevron {
+	margin-top: 21px;
+}
+
+#signinEnrollWidget .blueBtnWhiteBorder,
+.selectSec .blueBtnWhiteBorder {
+	color: #fff;
+	font-family: Roboto,Arial,Helvetica,sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 1.5;
+	background-color: #006AC3;
+	outline: 2px solid #c3e2fa;
+	border: 0px solid transparent;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	margin-left: 2px;
+	min-width: 111px;
+}
+
+#signinEnrollWidget .blueBtnWhiteBorder:hover,
+.selectSec .blueBtnWhiteBorder:hover {
+	Background: #0051a5;
+	outline: 3px solid #c3e2fa;
+	border: 0px solid transparent;
+}
+
+#signinEnrollWidget .blueBtnWhiteBorder:active,
+.selectSec .blueBtnWhiteBorder:active {
+	Background: #003168;
+	outline: 3px solid #c3e2fa;
+	border: 0px solid transparent;
+}
+
+#signinEnrollWidget .blueBtnWhiteBorder:focus,
+.selectSec .blueBtnWhiteBorder:focus {
+	Background: #0051a5;
+	outline: 3px solid #c3e2fa;
+	border: 0px solid transparent;
+}
+
+#signinEnrollWidget .blueBtnWhiteBorder {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+ .selectSec .blueBtnWhiteBorder {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.selectSec > h2 {
+	margin-bottom: 0 !important;
+}
+
+.signin_content2 {
+	width: 100%;
+	display: flex;
+	align-items: stretch;
+	padding-bottom: 55px;
+}
+
+.signin_content2_full-width {
+	width: 100%;
+}
+
+.signin_content2_col-left {
+	width: 664px;
+}
+
+.signin_content2_col-right {
+	width: 481px;
+	padding: 0px;
+	margin-left: calc(100% - 664px - 481px);
+}
+
+.signin_content2_head {
+	height: 74px;
+	padding-top: 27px;
+}
+
+.signin_content2_head h3 {
+	padding: 0px;
+	margin: 0px;
+}
+
+.signin_content2_body_links {
+	margin-top: 24px;
+}
+
+.signin_content2_body_colx2 {
+	display: flex;
+	justify-content: space-between;
+	align-items: stretch;
+}
+
+.signin_content2_body_colx2-left {
+	width: 570px;
+	padding-right: 20px;
+}
+
+.signin_content2_body_colx2-right {
+	width: 570px;
+	margin-left: calc(100% - 570px - 570px);
+	padding-right: 20px;
+}
+
+.signin_content2_body_spotlight_table {
+	padding: 0px;
+}
+
+.signin_content2_body_spotlight_row {
+	padding: 24px 0px;
+	margin: 0px;
+	display: flex;
+	justify-content: flex-start;
+}
+
+.signin_content2_body_spotlight_cell-date {
+	padding: 0px;
+	padding-right: 1em;	
+	margin: 0px;
+	width: 145px;
+}
+
+.signin_content2_body_spotlight_cell-link {
+	padding: 0px 0px 0px 0px;
+	margin: 0px;
+	width: calc(100% - 145px);
+}
+
+.signin_content2_head h3 {
+	font-style: normal;
+	font-size: 137.93%;
+	line-height: 1.5;
+	font-family: Roboto, Arial, Helvetica, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	color: #282828;
+}
+
+.signin_content2_body_links a {
+	font-weight: 300;
+	font-size: 110.34%;
+	line-height: 1.5;
+	font-family: Roboto, Arial, Helvetica, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	color: #006AC3;
+}
+
+.signin_content2_body_spotlight_cell-date {
+	font-style: normal;
+	font-weight: 500;
+	font-size: 110.34%;
+	line-height: 1.5;
+	font-family: Roboto, Arial, Helvetica, sans-serif;
+	letter-spacing: 1.2px;
+	-webkit-font-smoothing: antialiased;
+	color: #333333;
+}
+
+.signin_content2_body_spotlight_cell-link a {
+	font-weight: 300;
+	font-size: 110.34%;
+	line-height: 1.5;
+	font-family: Roboto, Arial, Helvetica, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	color: #006AC3;
+}
+
+.signin_content2_head {
+	border-bottom: 1px solid #B3B3B3;
+}
+
+.signin_content2_body_spotlight_row {
+	border-bottom: 1px solid #B3B3B3;
+}
+
+/* Remove these Styles for Signin Changes - At a later date. MF */
+
+/* OLB Block */
+#olbLinks {
+	position: relative;
+	margin: 0;
+	margin-bottom: 8px;
+	top: 25px;
+}
+
+#olbLinks section {
+	bottom: 0;
+	padding: 30px 27px;
+	background-color: #fff;
+}
+
+#olbLinks section:first-child + section {
+	margin: 0 16px;
+}
+
+#olbLinks::last-child {
+	margin-right: 0;
+}
+
+#olbLinks section ul {
+	margin-bottom: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#olbLinks section li {
+	line-height: 1.4;
+	width: 95%;
+	margin-top: 24px;
+}
+
+#olbLinks section li:first-child {
+	margin-top: 0;
+}
+
+#olbLinks section a {
+	line-height: 1.2;
+}
+
+#olbLinks section h3 {
+	font-size: 124.14%;
+	margin: 0 0 25px;
+	color: #282828;
+}
+
+#olbLinks .col-xs-4 {
+	width: 32.5%;
+}
+
+.ie9 #olbLinks .col-xs-4 {
+	width: 32.425%;
+}
+
+#olbLinks .col-xs-8 {
+	margin-right: 15px;
+}
+
+#olbLinks .col-xs-8 + .col-xs-4 {
+	margin: 0;
+}
+
+.ie9 #olbLinks .col-xs-8 + .col-xs-4,
+.ie10 #olbLinks .col-xs-8 + .col-xs-4 {
+	width: 32%;
+}
+/* Remove block end. MF */
+
+.main-legal {
+	background-color: #585858;
+	display: block;
+	min-width: 1222px;
+	font-family: Roboto,Arial,Helvetica,sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+
+.main-legal-inner {
+	padding: 20px 15px;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.main-legal-inner a {
+	color: white;
+}
+
+.main-legal-inner .legal-left p {
+	margin: 0;
+	line-height: 2.4rem;
+	font-size: 1.6rem;
+	font-weight: 400;
+}
+
+.main-legal-inner .legal-left a {
+	font-weight: 300;
+	text-decoration: underline;
+}
+
+.main-legal-inner .to-top {
+	padding-left: 30px;
+	height: 62px;
+	border-left: 1px solid #b3b3b3;
+	line-height: 2.7rem;
+}
+
+.main-legal-inner .to-top a {
+	text-decoration: none;
+}
+
+.main-legal-inner .to-top img {
+	height: 20px;
+	width: 30px;
+	margin-bottom: 15px;
+}
+
+.main-legal-inner .to-top span {
+	font-weight: 400;
+	font-size: 1.8rem;
+	display: block;
+}
+
+#signInPage .yellowMessage {
+    /* Temporary requirement for Signin page. It will apply to entire sites. */
+    /* !important is used for lack of options. */
+    font-family: Roboto,Arial,Helvetica,sans-serif !important;
+}
+
+#signInPage .notices {
+	/* Overiding master css */
+	margin-bottom: 0px;
+}
+
+#signInPage .serviceNotice,
+#signInPage .importantNotice {
+	margin-bottom: 0px;
+	margin-top: 20px;
+	border: 1px solid #B3B3B3;
+	border-top: 4px solid #FFBA00;
+	min-height: 104px;
+	padding: 15px 20px 10px 0;
+	font-family: Roboto,Arial,Helvetica,sans-serif !important;
+}
+ 
+#signInPage .serviceNotice_head,
+#signInPage .importantNotice_head {
+	font-weight: normal;
+	color: #444444;
+	font-size: 110.34%;
+	line-height: 1.5;
+	display: flex;
+	align-items: flex-start;
+}
+
+#signInPage .serviceNotice_head_iconWrapper,
+#signInPage .importantNotice_head_iconWrapper {	
+	width: 56px;
+	min-height: 2em;
+	display: flex;
+	justify-content: center;
+}
+
+#signInPage .serviceNotice_head_text,
+#signInPage .importantNotice_head_text {
+	padding-top: .3em;
+	min-height: 2em;
+	width: calc( 100% - 56px);
+}
+
+#signInPage .serviceNotice_body,
+#signInPage .importantNotice_body {
+	margin-left: 56px;
+	font-weight: 300;
+	color: #006AC3;
+	font-size: 96.55%;
+	padding: 10px 0 11px 0;
+}
+
+#signInPage .serviceNotice_body_links,
+#signInPage .importantNotice_body_links {
+	padding: 0px;
+}
+
+#signInPage .serviceNotice_body_links a,
+#signInPage .importantNotice_body_links a {
+	color: #006AC3;
+}
+
+#signInPage .serviceNotice {
+	border-top: 4px solid #FFBA00;
+}
+
+#signInPage .serviceNotice_body {
+	line-height: 1.429;
+	color: #006AC3;
+}
+
+#signInPage .importantNotice {
+	border-top: 4px solid #456B86;
+}
+
+#signInPage .importantNotice_body {
+	line-height: 1.429;
+	color: #444444;
+}
+
+#signInPage .notice_body_item + .notice_body_item {
+	margin-top: 14px;
+}

@@ -1,0 +1,48 @@
+/* UOS Version: 2.2 - May 4, 2009 */
+
+body{background:#fff;background-image:none;}
+
+ul{list-style:disc !important;margin:12px 0 !important;padding:0 !important}
+	ul li{list-style:disc !important;background: none !important;margin:0 0 2px 15px !important;padding:0 !important}
+	
+#wrapper{width:auto}
+
+	#globalheader{border-bottom:1px solid gray !important;margin:0 0 12px 0}
+		#globalheader-search{display:none;}
+		#globalheader-links{display:none;}
+		#globalheader-secureinfo{display:none;}
+	
+	#mainnav{display:none}
+
+	
+	#layout{padding-left:0;padding-right:0}
+	
+		#layout-column-left{display:none}
+			
+			#banner{}
+			
+			#breadcrumbarea{display:none;}
+			
+			#pagetitlearea{padding:0;margin:0 0 12px 0}
+				
+				#pagetitlearea-tools{display:none;}
+			
+			#layout-column-main{width:auto !important;float:none !important;margin:0;clear:both}
+			
+				#layout-column-main .clear {height:auto !important}
+
+			#layout-column-right{display:none}
+	
+	#globalfooter-searchbar{display:none;}
+
+	#globalfooter-relatedlinks{display:none;}
+	
+	#globalfooter-main{border-top:1px solid gray;padding:12px 0}
+		#globalfooter-main #globalfooter-tool-line1{display:none;}
+		#globalfooter-main #globalfooter-tool-line2{display:none;}
+
+.callout{border:1px solid gray;}	
+	.callout-content{border:none !important;background:none}
+	.callout .callout-top{background:none !important}
+	.callout .callout-bottom{background:none !important}
+	.noprint{display:none !important}

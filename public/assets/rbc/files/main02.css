@@ -1,0 +1,121 @@
+	.subTitle,.m3st {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:bold;}
+.kioskPageTitleRow {font-size:110%;font-weight:bold;color:#ffffff;background-color:#000066;}
+sup.symbol {font-size:75%;}
+a.bannerLink{font-family:Arial,Helvetica,sans-serif;font-size:75%;font-weight:bold;color:#ffffff;text-decoration:none;}
+a.bannerLink:hover {text-decoration:underline;}
+a.breadCrumb {font-weight:bold;font-size:75%;}
+a.helpNavLink {font-family:Arial,Helvetica,sans-serif;font-size:75%;font-weight:bold;color:#000066;}
+.asterisk {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#ff0000;}
+I,.rbcItalic {font-style:italic;}
+EM,.rbcEmph {font-style:italic;}
+U,.rbcUnderline {text-decoration:underline;}
+.rbcFixedArial {font-size:10pt;font-family:Arial,Helvetica,sans-serif;}
+.errorLabel {font-family:Arial,Helvetica,sans-serif;font-size:75%;font-weight:bold;color:#ff0000;}
+.fieldInError {background-color:#ff0000;}
+.warnLabel {font-family:Arial,Helvetica,sans-serif;font-size:75%;font-weight:bold;color:#000000;}
+.infoLabel {font-family:Arial,Helvetica,sans-serif;font-size:75%;font-weight:bold;color:#000000;}
+.infoTextRow {background-color:#ffcc00;}
+.formLabelShaded {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:bold;background-color:#eceff3;}
+.formTextShaded {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;background-color:#eceff3;}
+.formErrorLabelShaded {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#ff0000;font-weight:bold;background-color:#eceff3;}
+.formErrorLabel {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#ff0000;}
+.displayTotal {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:bold;}
+.verticalSeparator {border-color:#000000#000000#000000#cccccc;border-style:solid;border-top-width:0px;border-right-width:0px;border-bottom-width:0px;border-left-width:1px;}
+.verticalSeparatorRight {border-color:#000000#cccccc #000000#cccccc;border-style:solid;border-top-width:0px;border-right-width:1px;border-bottom-width:0px;border-left-width:0px;}
+.actionPanelSectionSeparator,.m3apss{background-color:#ffcc00;border-top-width:1px;}
+a.actionPanelLink,a.m3apl {line-height:18px;font-size:75%;text-decoration:none;}
+a.m3apl:hover {text-decoration:underline;}
+a.actionPanelLink:hover {text-decoration:underline;}
+.actionPanelLinkSeparator,.m3apls {background-color:#999999;}
+.actionPanelOfferHeadRow,.m3apohr {background-color:#ffcc00;}
+.actionPanelOfferHeadText,.m3apoht {font-size:75%;font-weight:bold;}
+.actionPanelText,.m3apt {font-size:75%;}
+.dataTableBorder {border-color:#999999;}
+.dataTableHeaderRow,.datatableHeaderRow,.m3dthr {background-color:#ccd4e5;}
+.dataTableHeaderText,.datatableHeaderText,.m3dtht {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:bold;}
+.dataTableHeaderTextLeft,.m3dthtl {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:bold;text-align:left;}
+.dataTableHeaderTextRight,.m3dthtr {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:bold;text-align:right;}
+.dataTableLightRow,.m3dtlr {background-color:#ffffff;}
+.dataTableDarkRow,.m3dtdr {background-color:#f6f4ef;}
+.dataTableText,.m3dtt {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;}
+.dataTableTextLeft,.m3dttl {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:normal;text-align:left;}
+.dataTableTextRight,.m3dttr {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#000000;font-weight:normal;text-align:right;}
+.dataTableSectionRow,.m3dtsr {background:#fff url(container-primary-bg.gif);}
+.dataTableSectionText,.m3dtst {font-family:Arial,Helvetica,sans-serif;font-size:75%;color:#595959;font-weight:bold;}
+.dataTableBorderDashed {;border:2px dashed #000000}
+.RdataTableBorderDashed {border-top:2px dashed #000000;border-bottom:2px dashed #000000;border-right:2px dashed #000000;}
+.alertMessage
+{
+font-family:Arial,Helvetica,sans-serif;
+font-size:75%;
+color:#000000;
+background-color:#ffcc00;
+}
+.alert
+{
+font-family:Arial,Helvetica,sans-serif;
+color:#000000;
+background-color:#ffcc00;
+}
+.alertTable
+{
+font-family:Arial,Helvetica,sans-serif;
+background-color:#ffcc00;
+}
+.Hide
+{
+visibility:hidden;
+}
+.Show
+{
+visibility:visible;
+}
+.scrollBox
+{
+overflow:auto;
+height:300;
+border-left:1px gray solid;
+border-bottom:1px gray solid;
+border-right:1px gray solid;
+border-top:1px gray solid;
+padding:0px;
+margin:0px;
+}
+.mainkeyline
+{
+BACKGROUND-COLOR:#999999
+}
+.divShow2
+{
+visibility:visible;
+position:relative;
+}
+.divHide2
+{
+visibility:hidden;
+position:relative;
+}
+.listBullet
+{
+margin-top:0px;
+margin-bottom:0px;
+}
+.titleShade
+{
+background-color:#cccccc;
+font-size:130%;
+font-weight:bold;
+}
+
+/*****************************************************************************/
+/* Added for OLB 1.1
+/*****************************************************************************/ 
+.m3dtt .m3dtt {font-size:100%;}
+.dataTableHeaderText .dataTableHeaderText {font-size:100%;}
+.dataTableText .dataTableText {font-size:100%;}
+.bodyText .dataTableHeaderText {font-size:100%;}
+.bodyText .dataTableText {font-size:100%;}
+.bodyText .formTextShaded {font-size:100%;}
+.bodyText .errorLabel {font-size:100%;}
+.formTextShaded .formLabelShaded {font-size: 100%;}
+.formTextShaded .formTextShaded {font-size: 100%;}

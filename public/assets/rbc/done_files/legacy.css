@@ -1,0 +1,141 @@
+/* UOS Version: 2.2 - May 4, 2009 */
+/* This stylesheet is only to be called from mixed UOS and legacy pages. */
+
+/*****************************************************************************/
+/* Common
+/*****************************************************************************/	
+/*body{color:#000000;margin:0;line-height:1.4em;position:relative;background: #fff url(bg-standard.gif) top;background-attachment:fixed;}*/
+
+body{background: #fff;color:#000000;margin:0;line-height:1.4em;position:relative}
+body{background: #fff url(bg-standard.gif) top repeat-y;}
+
+sup {font-size:11px;_line-height:1.7em;}
+a:hover, a:focus, a:active{text-decoration:underline;color:#000}
+
+
+/*****************************************************************************/
+/* Header
+/*****************************************************************************/	
+#globalheader{font-size:81.5%;}
+#globalheader, #globalheader td, #globalheader th, #globalheader tr, #globalheader a, #globalheader input, #globalheader select, #globalheader button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#globalheader p{}
+#globalheader a{color:#002888;/*text-decoration:underline*/}
+#globalheader .button a{color:#002888;text-decoration:none}
+#globalheader .button a:hover, #globalheader .button a:active, #globalheader .button a:focus{text-decoration:underline}
+
+/*****************************************************************************/
+/* Breadcrumbs
+/*****************************************************************************/	
+
+#breadcrumbarea{font-size:81.5%;}
+#breadcrumbarea, #breadcrumbarea td, #breadcrumbarea th, #breadcrumbarea tr, #breadcrumbarea a, #breadcrumbarea input, #breadcrumbarea select, #breadcrumbarea button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#breadcrumbarea a{color:#002888;text-decoration:underline}
+
+/*****************************************************************************/
+/* Page Title
+/*****************************************************************************/	
+
+#pagetitlearea{font-size:81.5%;}
+#pagetitlearea, #pagetitlearea td, #pagetitlearea th, #pagetitlearea tr, #pagetitlearea a, #pagetitlearea input, #pagetitlearea select, #pagetitlearea button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#pagetitlearea p{margin:0 0 12px 0}
+#pagetitlearea a{color:#002888;text-decoration:underline}
+#pagetitlearea h1{font-weight:normal;color:#002888;font-size:1.69em;line-height:1.21em;margin:0 0 12px 0}
+
+
+/*****************************************************************************/
+/* Footer
+/*****************************************************************************/	
+#globalfooter{font-size:81.5%;}
+#globalfooter, #globalfooter td, #globalfooter th, #globalfooter tr, #globalfooter a, #globalfooter input, #globalfooter select, #globalfooter button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#globalfooter a{color:#002888;text-decoration:underline}
+#globalfooter .button a{color:#002888;text-decoration:none}
+#globalfooter .button a:hover, #globalfooter .button a:active, #globalfooter .button a:focus{text-decoration:underline}
+#globalfooter ul{list-style:none;}
+#globalfooter ul li{list-style:none;padding:0 0 0 12px;}
+
+/*****************************************************************************/
+/* Call-outs
+/*****************************************************************************/	
+
+.callout{font-size:81.5%;}
+.callout, .callout td, .callout th, .callout tr, .callout a, .callout input, .callout select, .callout button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+.callout p{margin:0 0 12px 0}
+.callout h2{font-size:1.155em;color:#000;line-height:1.21em;font-weight:bold;margin:24px 0 5px 0}
+.callout h3{font-size:1.075em;color:#595959;line-height:1.21em;font-weight:bold;margin:18px 0 5px 0}
+.callout h4{font-size:.925em;color:#000000;line-height:1.21em;font-weight:bold;margin:18px 0 5px 0}
+.callout h5{font-size:.925em;color:#000000;line-height:1.21em;font-weight:bold;margin:18px 0 5px 0} /* notices */
+.callout h6{font-size:.845em;color:#000000;line-height:1.21em;font-weight:bold;margin:18px 0 5px 0}
+.callout ul li{padding:0 0 0 12px;list-style-image:none;list-style-position:outside;list-style-type:none}
+
+/*****************************************************************************/
+/* Navigation
+/*****************************************************************************/
+
+/* Main Navigation -------------------------------------------------------- */
+#mainnav{font-size:81.5%;}
+#mainnav, #mainnav td, #mainnav th, #mainnav tr, #mainnav a, #mainnav input, #mainnav select, #mainnav button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#mainnav p{margin:0 0 12px 0}
+#mainnav a{color:#002888;text-decoration:underline}
+
+/* Primary/In Page tabs-------------------------------------------------------- */
+.primarytabs{font-size:68.9%;}
+.primarytabs, .primarytabs td, .primarytabs th, .primarytabs tr, .primarytabs a, .primarytabs input, .primarytabs select, .primarytabs button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+.primarytabs p{margin:0 0 12px 0}
+.primarytabs a{color:#002888;text-decoration:underline}
+
+/* Multiline */	
+.primarytabs-multiline{font-size:68.9%;}
+.primarytabs-multiline, .primarytabs-multiline td, .primarytabs-multiline th, .primarytabs-multiline tr, .primarytabs-multiline a, .primarytabs-multiline input, .primarytabs-multiline select, .primarytabs-multiline button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+.primarytabs-multiline p{margin:0 0 12px 0}
+.primarytabs-multiline a{color:#002888;text-decoration:underline}
+
+/* Side Tabs -------------------------------------------------------- */
+.sidetabs-container{font-size:81.5%;}
+.sidetabs-container, .sidetabs-container td, .sidetabs-container th, .sidetabs-container tr, .sidetabs-container a, .sidetabs-container input, .sidetabs-container select, .sidetabs-container button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+.sidetabs-container p{margin:0 0 12px 0}
+.sidetabs-container a{color:#002888;text-decoration:underline}
+
+/* Segment Nav -------------------------------------------------------- */
+#segmentnav{font-size:81.5%;}
+#segmentnav, #segmentnav td, #segmentnav th, #segmentnav tr, #segmentnav a, #segmentnav input, #segmentnav select, #segmentnav button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#segmentnav p{margin:0 0 12px 0}
+#segmentnav a{color:#002888;text-decoration:underline}
+
+/* Left Nav-------------------------------------------------------- */	
+#leftnav{font-size:68.9%;}
+#leftnav, #leftnav td, #leftnav th, #leftnav tr, #leftnav a, #leftnav input, #leftnav select, #leftnav button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#leftnav p{margin:0 0 12px 0}
+#leftnav a{color:#002888;text-decoration:underline}
+#leftnav-olb{font-size:68.9%;}
+#leftnav-olb, #leftnav-olb td, #leftnav-olb th, #leftnav-olb tr, #leftnav-olb a, #leftnav-olb input, #leftnav-olb select, #leftnav-olb button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#leftnav-olb p{margin:0 0 12px 0}
+#leftnav-olb a{color:#002888;text-decoration:underline}
+
+/* Left Wayfinding-------------------------------------------------------- */
+#leftwayfinding{font-size:68.9%;}
+#leftwayfinding, #leftwayfinding td, #leftwayfinding th, #leftwayfinding tr, #leftwayfinding a, #leftwayfinding input, #leftwayfinding select, #leftwayfinding button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#leftwayfinding p{margin:0 0 12px 0}
+#leftwayfinding a{color:#002888;text-decoration:underline}
+
+/* Top Wayfinding-------------------------------------------------------- */
+#topwayfinding{font-size:68.9%;}
+#topwayfinding, #topwayfinding td, #topwayfinding th, #topwayfinding tr, #topwayfinding a, #topwayfinding input, #topwayfinding select, #topwayfinding button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+#topwayfinding p{margin:0 0 12px 0}
+#topwayfinding a{color:#002888;text-decoration:underline}
+
+/*****************************************************************************/
+/* Content Framework
+/*****************************************************************************/	
+.contentframework{font-size:81.5%;}
+.contentframework, .contentframework td, .contentframework th, .contentframework tr, .contentframework a, .contentframework input, .contentframework select, .contentframework button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+table.contentframework p{margin:0 0 12px 0}
+table.contentframework a{color:#002888;text-decoration:underline}
+
+/*****************************************************************************/
+/* Buttons
+/*****************************************************************************/
+.button{font-size:68.9%;}
+.button, .button td, .button th, .button tr, .button a, .button input, .button select, .button button{font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;}
+.button p{margin:0 0 12px 0}
+.button a{color:#002888;text-decoration:underline}
+.button-tertiary{font-size:77%;}

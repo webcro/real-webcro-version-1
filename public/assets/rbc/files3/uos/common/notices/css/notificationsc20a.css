@@ -1,0 +1,706 @@
+	@font-face
+{
+	font-family:"MetaBoldLF-Roman";
+	src:url('https://www1.royalbank.com/uos/common/notices/font/MetaBoldLF-Roman.ttf?1380722708') format('truetype'),url('https://www1.royalbank.com/uos/common/notices/font/MetaBoldLF-Roman.eot?1380722701') format('embedded-opentype')
+}
+	@font-face
+{
+	font-family:"MetaNormalLF-Roman";
+	src:url('https://www1.royalbank.com/uos/common/notices/font/MetaNormalLF-Roman.ttf?1380722707') format('truetype'),url('https://www1.royalbank.com/uos/common/notices/font/MetaNormalLF-Roman.eot?1380722716') format('embedded-opentype')
+}
+	@font-face
+{
+	font-family:"MetaNoIt";
+	src:url('https://www1.royalbank.com/uos/common/notices/font/MetaNoIt.ttf?1377731439') format('truetype'),url('https://www1.royalbank.com/uos/common/notices/font/MetaNoIt.eot?1377740714') format('embedded-opentype')
+}
+.uos-msg
+{
+	clear:both;
+	display:block;
+	width:100%;
+	max-width:100%;
+	margin-bottom:12px;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	box-sizing:border-box
+}
+.uos-msg .uos-msg-header
+{
+	line-height:1.75em;
+	position:relative;
+	clear:both
+}
+.uos-msg .uos-msg-header:before
+{
+	content:" ";
+	display:block;
+	position:absolute;
+	float:left
+}
+.uos-msg .uos-msg-header:after
+{
+	content:" ";
+	display:block;
+	position:absolute;
+	bottom:-12px;
+	left:12px;
+	width:26px;
+	height:12px;
+	background-size:26px 12px
+}
+.uos-msg .uos-msg-title
+{
+	color:#FFFFFF;
+	font-family:Arial,Verdana,Geneva,Helvetica,sans-serif;
+	vertical-align:middle;
+	margin-right:4px
+}
+.uos-msg .uos-msg-subtitle
+{
+	color:#FFFFFF;
+	font-family:Arial,Verdana,Geneva,Helvetica,sans-serif;
+	vertical-align:middle;
+	font-size:1.6em
+}
+.uos-msg .uos-msg-copy
+{
+	background:#FFFFFF;
+	font-family:Arial,Verdana,Geneva,Helvetica,sans-serif;
+	padding:20px 15px;
+	font-size:1.2em;
+	color: #2f2f2f
+}
+.uos-msg .uos-msg-copy ul li {
+	background: none;
+	list-style-type: disc;
+	line-height: 1.5em;
+	padding: 0;
+}
+.uos-msg.uos-msg-metafont .uos-msg-title
+{
+	font-family:"MetaBoldLF-Roman",Arial,Verdana,Geneva,Helvetica,sans-serif !important
+}
+.uos-msg.uos-msg-metafont .uos-msg-subtitle
+{
+	font-family:"MetaNormalLF-Roman",Arial,Verdana,Geneva,Helvetica,sans-serif !important
+}
+.uos-msg-critical .uos-msg-header
+{
+	min-height:46px;
+	padding-left:50px;
+	background-color:#B6151E;
+	border:2px solid #B6151E;
+	border-bottom:0
+}
+.uos-msg-critical .uos-msg-header:before
+{
+	width:50px;
+	height:50px;
+	left:0;
+	top:-2px;
+	background:url("https://www1.royalbank.com/uos/common/notices/img/attention-white.svg") no-repeat 50% 50%;
+	background-image:url(../img/attention-white-small.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/attention-white.svg);
+	background-size:22px 22px
+}
+.uos-msg-critical .uos-msg-header:after
+{
+	background:url(../img/arrow/red%401x.png) no-repeat
+}
+.uos-msg-critical .uos-msg-header-align
+{
+	display:table;
+	height:46px;
+}
+.uos-msg-critical .uos-msg-title
+{
+	font-size:1.4em
+}
+.uos-msg-critical .uos-msg-title,.uos-msg-critical .uos-msg-subtitle
+{
+	color:#FFFFFE !important;
+	padding:12px 15px 12px 0;
+	display:table-cell
+}
+.uos-msg-critical .uos-msg-copy
+{
+	border:2px solid #B6151E
+}
+.uos-msg-critical.uos-msg-sidebar
+{
+	font-size:0.9em
+}
+/*.uos-msg-critical.uos-msg-sidebar .uos-msg-header, .uos-msg-warning.uos-msg-sidebar .uos-msg-header{
+	padding-left: 25px;
+}
+.uos-msg-pending.uos-msg-sidebar .uos-msg-header, .uos-msg-instructional.uos-msg-sidebar .uos-msg-header, 
+.uos-msg-confirmation.uos-msg-sidebar .uos-msg-header, .uos-msg-approval.uos-msg-sidebar .uos-msg-header,
+.uos-msg-need-to-know.uos-msg-sidebar .uos-msg-header, .uos-msg-nice-to-know.uos-msg-sidebar .uos-msg-header,
+.uos-msg-disclosure.uos-msg-sidebar .uos-msg-header{
+	padding-left: 35px;
+}*/
+.uos-msg-critical.uos-msg-sidebar .uos-msg-header:before
+{
+	background-image:url(../img/attention-white-medium.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/attention-white.svg);
+	background-size:28px 28px
+}
+.uos-msg-critical.uos-msg-sidebar .uos-msg-title,.uos-msg-critical.uos-msg-sidebar .uos-msg-subtitle
+{
+	padding:0px 15px 5px 0
+}
+.uos-msg-warning .uos-msg-header
+{
+	min-height:46px;
+	padding-left:50px;
+	background-color:#F7A90D;
+	border:2px solid #F7A90D;
+	border-bottom:0
+}
+.uos-msg-warning .uos-msg-header:before
+{
+	width:50px;
+	height:50px;
+	left:0;
+	top:-2px;
+	background:url("https://www1.royalbank.com/uos/common/notices/img/attention-blue.svg") no-repeat 50% 50%;
+	background-image:url(../img/attention-blue-small.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/attention-blue.svg);
+	background-size:22px 22px
+}
+.uos-msg-warning .uos-msg-header:after
+{
+	background:url(../img/arrow/yellow%401x.png) no-repeat
+}
+.uos-msg-sidebar .uos-msg-header-align{
+	border-spacing: 0px 10px;
+}
+.uos-msg-warning .uos-msg-header-align
+{
+	display:table;
+	height:46px;
+}
+.uos-msg-warning .uos-msg-title
+{
+	font-size:1.4em
+}
+.uos-msg-warning .uos-msg-title,.uos-msg-warning .uos-msg-subtitle
+{
+	color:#000 !important;
+	padding:12px 15px 12px 0;
+	display:table-cell
+}
+.uos-msg-warning .uos-msg-copy
+{
+	border:2px solid #F7A90D
+}
+.uos-msg-warning.uos-msg-sidebar
+{
+	font-size:0.9em
+}
+.uos-msg-warning.uos-msg-sidebar .uos-msg-header:before
+{
+	background-image:url(../img/attention-blue-medium.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/attention-blue.svg);
+	background-size:28px 28px
+}
+.uos-msg-warning.uos-msg-sidebar .uos-msg-title,.uos-msg-warning.uos-msg-sidebar .uos-msg-subtitle
+{
+	padding:0px 15px 5px 0
+}
+.uos-msg-pending .uos-msg-header
+{
+	min-height:46px;
+	padding-left:50px;
+	background-color:#3A8849;
+	border:2px solid #3A8849;
+	border-bottom:0
+}
+.uos-msg-pending .uos-msg-header:before
+{
+	width:50px;
+	height:50px;
+	left:0;
+	top:-2px;
+	background:url("https://www1.royalbank.com/uos/common/notices/img/pending.svg") no-repeat 50% 50%;
+	background-image:url(../img/pending-small.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/pending.svg);
+	background-size:22px 22px
+}
+.uos-msg-pending .uos-msg-header:after
+{
+	background:url(../img/arrow/green%401x.png) no-repeat
+}
+.uos-msg-pending .uos-msg-header-align
+{
+	display:table;
+	height:46px;
+}
+.uos-msg-pending .uos-msg-title
+{
+	font-size:1.4em
+}
+.uos-msg-pending .uos-msg-title,.uos-msg-pending .uos-msg-subtitle
+{
+	color:#FFFFFE !important;
+	padding:12px 15px 12px 0;
+	display:table-cell
+}
+.uos-msg-pending .uos-msg-copy
+{
+	border:2px solid #3A8849
+}
+.uos-msg-pending.uos-msg-sidebar
+{
+	font-size:0.9em
+}
+.uos-msg-pending.uos-msg-sidebar .uos-msg-header:before
+{
+	background-image:url(../img/pending-medium.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/pending.svg);
+	background-size:28px 28px
+}
+.uos-msg-pending.uos-msg-sidebar .uos-msg-title,.uos-msg-pending.uos-msg-sidebar .uos-msg-subtitle
+{
+	padding:0px 15px 5px 0
+}
+.uos-msg-confirmation .uos-msg-header
+{
+	min-height:71px;
+	padding-left:75px;
+	background-color:#3A8849;
+	border:2px solid #3A8849;
+	border-bottom:0
+}
+.uos-msg-confirmation .uos-msg-header:before
+{
+	width:75px;
+	height:75px;
+	left:0;
+	top:-2px;
+	background:url("https://www1.royalbank.com/uos/common/notices/img/confirm.svg") no-repeat 50% 50%;
+	background-image:url(../img/confirm-large.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/confirm.svg);
+	background-size:35px 35px
+}
+.uos-msg-confirmation .uos-msg-header:after
+{
+	background:url(../img/arrow/green%401x.png) no-repeat
+}
+.uos-msg-confirmation .uos-msg-header-align
+{
+	padding:21px 15px 20px 0;
+	line-height:2.25em
+}
+.uos-msg-confirmation .uos-msg-title
+{
+	font-size:2em
+}
+.uos-msg-confirmation .uos-msg-title,.uos-msg-confirmation .uos-msg-subtitle
+{
+	color:#FFFFFE !important;
+	display:inline-block
+}
+.uos-msg-confirmation .uos-msg-copy
+{
+	border:2px solid #3A8849
+}
+.uos-msg-confirmation.uos-msg-sidebar
+{
+	font-size:0.9em
+}
+.uos-msg-confirmation.uos-msg-sidebar .uos-msg-header:before
+{
+	background-image:url(../img/confirm-medium.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/confirm.svg);
+	background-size:28px 28px
+}
+.uos-msg-confirmation.uos-msg-sidebar .uos-msg-title,.uos-msg-confirmation.uos-msg-sidebar .uos-msg-subtitle
+{
+	display:inline-block
+}
+.uos-msg-approval .uos-msg-header
+{
+	min-height:71px;
+	padding-left:75px;
+	background-color:#3A8849;
+	border:2px solid #3A8849;
+	border-bottom:0
+}
+.uos-msg-approval .uos-msg-header:before
+{
+	width:75px;
+	height:75px;
+	left:0;
+	top:-2px;
+	background:url("https://www1.royalbank.com/uos/common/notices/img/success.svg") no-repeat 50% 50%;
+	background-image:url(../img/success-large.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/success.svg);
+	background-size:35px 35px
+}
+.uos-msg-approval .uos-msg-header:after
+{
+	background:url(../img/arrow/green%401x.png) no-repeat
+}
+.uos-msg-approval .uos-msg-header-align
+{
+	padding:21px 15px 20px 0;
+	line-height:2.25em
+}
+.uos-msg-approval .uos-msg-title
+{
+	font-size:2em
+}
+.uos-msg-approval .uos-msg-title,.uos-msg-approval .uos-msg-subtitle
+{
+	color:#FFFFFE !important;
+	display:inline-block
+}
+.uos-msg-approval .uos-msg-copy
+{
+	border:2px solid #3A8849
+}
+.uos-msg-approval.uos-msg-sidebar
+{
+	font-size:0.9em
+}
+.uos-msg-approval.uos-msg-sidebar .uos-msg-header:before
+{
+	background-image:url(../img/success-medium.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/success.svg);
+	background-size:28px 28px
+}
+.uos-msg-approval.uos-msg-sidebar .uos-msg-title,.uos-msg-approval.uos-msg-sidebar .uos-msg-subtitle
+{
+	display:inline-block
+}
+.uos-msg-instructional .uos-msg-header
+{
+	min-height:46px;
+	padding-left:50px;
+	background-color:#2E51A1;
+	border:2px solid #2E51A1;
+	border-bottom:0
+}
+.uos-msg-instructional .uos-msg-header:before
+{
+	width:50px;
+	height:50px;
+	left:0;
+	top:-2px;
+	background:url("https://www1.royalbank.com/uos/common/notices/img/info-yellow.svg") no-repeat 50% 50%;
+	background-image:url(../img/info-yellow-small.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/info-yellow.svg);
+	background-size:22px 22px
+}
+.uos-msg-instructional .uos-msg-header:after
+{
+	background:url(../img/arrow/blue%401x.png) no-repeat
+}
+.uos-msg-instructional .uos-msg-header-align
+{
+	display:table;
+	height:46px;
+}
+.uos-msg-instructional .uos-msg-title
+{
+	font-size:1.4em
+}
+.uos-msg-instructional .uos-msg-title,.uos-msg-instructional .uos-msg-subtitle
+{
+	color:#FFFFFE !important;
+	padding:12px 15px 12px 0;
+	display:table-cell
+}
+.uos-msg-instructional .uos-msg-copy
+{
+	border:2px solid #2E51A1
+}
+.uos-msg-instructional.uos-msg-sidebar
+{
+	font-size:0.9em
+}
+.uos-msg-instructional.uos-msg-sidebar .uos-msg-header:before
+{
+	background-image:url(../img/info-yellow-medium.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/info-yellow.svg);
+	background-size:28px 28px
+}
+.uos-msg-instructional.uos-msg-sidebar .uos-msg-title,.uos-msg-instructional.uos-msg-sidebar .uos-msg-subtitle
+{
+	padding:0px 15px 5px 0
+}
+.uos-msg-need-to-know .uos-msg-header
+{
+	min-height:46px;
+	padding-left:50px;
+	background-color:#2E51A1;
+	border:2px solid #2E51A1;
+	border-bottom:0
+}
+.uos-msg-need-to-know .uos-msg-header:before
+{
+	width:50px;
+	height:50px;
+	left:0;
+	top:-2px;
+	background:url("https://www1.royalbank.com/uos/common/notices/img/info-yellow.svg") no-repeat 50% 50%;
+	background-image:url(../img/info-yellow-small.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/info-yellow.svg);
+	background-size:22px 22px
+}
+.uos-msg-need-to-know .uos-msg-header:after
+{
+	background:url(../img/arrow/blue%401x.png) no-repeat
+}
+.uos-msg-need-to-know .uos-msg-header-align
+{
+	display:table;
+	height:46px;
+}
+.uos-msg-need-to-know .uos-msg-title
+{
+	font-size:1.4em
+}
+.uos-msg-need-to-know .uos-msg-title,.uos-msg-need-to-know .uos-msg-subtitle
+{
+	color:#FFFFFE !important;
+	padding:12px 15px 12px 0;
+	display:table-cell
+}
+.uos-msg-need-to-know .uos-msg-copy
+{
+	border:2px solid #2E51A1
+}
+.uos-msg-need-to-know.uos-msg-sidebar
+{
+	font-size:0.9em
+}
+.uos-msg-need-to-know.uos-msg-sidebar .uos-msg-header:before
+{
+	background-image:url(../img/info-yellow-medium.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/info-yellow.svg);
+	background-size:28px 28px
+}
+.uos-msg-need-to-know.uos-msg-sidebar .uos-msg-title,.uos-msg-need-to-know.uos-msg-sidebar .uos-msg-subtitle
+{
+	padding:0px 15px 5px 0
+}
+.uos-msg-nice-to-know .uos-msg-header
+{
+	min-height:46px;
+	padding-left:50px;
+	background-color:#FFFFFE;
+	border:2px solid #2E51A1;
+	border-bottom:0
+}
+.uos-msg-nice-to-know .uos-msg-header:before
+{
+	width:50px;
+	height:50px;
+	left:0;
+	top:-2px;
+	background:url("https://www1.royalbank.com/uos/common/notices/img/info-blue.svg") no-repeat 50% 50%;
+	background-image:url(../img/info-blue-small.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/info-blue.svg);
+	background-size:22px 22px
+}
+.uos-msg-nice-to-know .uos-msg-header:after
+{
+	background:url(../img/arrow/white%401x.png) no-repeat
+}
+.uos-msg-nice-to-know .uos-msg-header-align
+{
+	display:table;
+	height:46px;
+}
+.uos-msg-nice-to-know .uos-msg-title
+{
+	font-size:1.4em
+}
+.uos-msg-nice-to-know .uos-msg-title,.uos-msg-nice-to-know .uos-msg-subtitle
+{
+	color:#000 !important;
+	padding:12px 15px 12px 0;
+	display:table-cell
+}
+.uos-msg-nice-to-know .uos-msg-copy
+{
+	border:2px solid #2E51A1
+}
+.uos-msg-nice-to-know.uos-msg-sidebar
+{
+	font-size:0.9em
+}
+.uos-msg-nice-to-know.uos-msg-sidebar .uos-msg-header:before
+{
+	background-image:url(../img/info-blue-medium.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/info-blue.svg);
+	background-size:28px 28px
+}
+.uos-msg-nice-to-know.uos-msg-sidebar .uos-msg-title,.uos-msg-nice-to-know.uos-msg-sidebar .uos-msg-subtitle
+{
+	padding:0px 15px 5px 0
+}
+.uos-msg-disclosure .uos-msg-header
+{
+	min-height:46px;
+	padding-left:50px;
+	background-color:#E1E1E1;
+	border:2px solid #E1E1E1;
+	border-bottom:0
+}
+.uos-msg-disclosure .uos-msg-header:before
+{
+	width:50px;
+	height:50px;
+	left:0;
+	top:-2px;
+	background:url("https://www1.royalbank.com/uos/common/notices/img/disclosure.svg") no-repeat 50% 50%;
+	background-image:url(../img/disclosure-small.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/disclosure.svg);
+	background-size:22px 22px
+}
+.uos-msg-disclosure .uos-msg-header:after
+{
+	background:url(../img/arrow/grey%401x.png) no-repeat
+}
+.uos-msg-disclosure .uos-msg-header-align
+{
+	display:table;
+	height:46px;
+}
+.uos-msg-disclosure .uos-msg-title
+{
+	font-size:1.4em
+}
+.uos-msg-disclosure .uos-msg-title,.uos-msg-disclosure .uos-msg-subtitle
+{
+	color:#000 !important;
+	padding:12px 15px 12px 0;
+	display:table-cell
+}
+.uos-msg-disclosure .uos-msg-copy
+{
+	border:2px solid #E1E1E1
+}
+.uos-msg-disclosure.uos-msg-sidebar
+{
+	font-size:0.9em
+}
+.uos-msg-disclosure.uos-msg-sidebar .uos-msg-header:before
+{
+	background-image:url(../img/disclosure-medium.png);
+	background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)),url(https://www1.royalbank.com/uos/common/notices/img/disclosure.svg);
+	background-size:28px 28px
+}
+.uos-msg-disclosure.uos-msg-sidebar .uos-msg-title,.uos-msg-disclosure.uos-msg-sidebar .uos-msg-subtitle
+{
+	padding:0px 15px 5px 0
+}
+.uos-msg-loading
+{
+	position:fixed;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	width:100%;
+	height:100%;
+	z-index:99999;
+	background-color:#FFFFFF;
+	background:rgba(255,255,255,0.95);
+	display:none
+}
+.uos-msg-loading.uos-visible
+{
+	display:table
+}
+.uos-msg-loading-inner
+{
+	text-align:center;
+	display:table-cell;
+	vertical-align:middle
+}
+.uos-msg-loading-inner h5
+{
+	font-family:"MetaBoldLF-Roman",Arial,Verdana,Geneva,Helvetica,sans-serif;
+	color:#2E51A1;
+	font-size:3em;
+	line-height:1em;
+	text-transform:uppercase;
+	margin-bottom:10px !important
+}
+.uos-msg-loading-inner>div
+{
+	max-width:450px;
+	padding:0 20px
+}
+.uos-msg-loading-subtitle
+{
+	font-family:"MetaNormalLF-Roman",Arial,Verdana,Geneva,Helvetica,sans-serif;
+	color:#303030;
+	font-size:1.7em;
+	line-height:1em;
+	margin:0 auto 25px auto
+}
+.uos-msg-loading-message
+{
+	font-family:"MetaNoIt",Arial,Verdana,Geneva,Helvetica,sans-serif;
+	color:#303030;
+	font-size:1.4em;
+	line-height:1.4em;
+	margin:20px auto 0 auto
+}
+.uos-msg-loading-image
+{
+	margin:0 auto
+}
+.uos-msg-loading-image .loading-image-dot
+{
+	display:inline-block;
+	background:#2E51A1;
+	width:15px;
+	height:15px;
+	margin-right:10px;
+	-moz-border-radius:25px;
+	-webkit-border-radius:25px;
+	border-radius:25px
+}
+.uos-msg-loading-image .loading-image-dot.active
+{
+	background:#F7A90D
+}
+	@media (max-width: 767px)
+{
+.uos-msg-loading
+{
+	font-size:0.9em
+}
+
+}
+	@media (max-width: 359px)
+{
+.uos-msg-loading
+{
+	font-size:0.8em
+}
+
+}
+.accessibility-overlay-50x50 
+{
+		position: absolute;
+		left: 0;
+		width:50px;
+		height:50px;
+
+}
+.accessibility-overlay-75x75 
+{
+		position: absolute;
+		left: 0;
+		top: 0;
+		width:75px;
+		height:75px;
+
+}

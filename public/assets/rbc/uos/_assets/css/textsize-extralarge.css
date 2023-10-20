@@ -1,0 +1,12 @@
+/* UOS Version: 2.2 - May 4, 2009 */
+
+body{font-size:112%;}
+
+#tool-textresize-normal img{background-position:top !important;}
+#tool-textresize-large img{background-position:top !important}
+#tool-textresize-extralarge img{background-position:bottom !important;}
+
+/* New Header Footer Fix */
+#tool-textresize-normal-new img{background-position:top !important;}
+#tool-textresize-large-new img{background-position:top !important}
+#tool-textresize-extralarge-new img{background-position:bottom !important;}

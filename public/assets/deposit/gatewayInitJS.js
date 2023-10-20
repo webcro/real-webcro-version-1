@@ -1,0 +1,2 @@
+var Gateway=Gateway||function(){var useImage=function(element,url){$(element).attr('original',$(element).attr('src'));$(element).attr('src',url);$(element).removeAttr('onerror');};var init=function(){};return{init:init,useImage:useImage};}();$(document).ready(function(){$("#isMobileBrowser").val("false");var isMobile=jQuery.browser.mobile;if(isMobile){$("#isMobileBrowser").val("true");}
+$('.deposit-form-submit-btn').click(function(){submitForm();});});

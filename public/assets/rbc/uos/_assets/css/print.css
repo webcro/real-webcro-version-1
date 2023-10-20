@@ -1,0 +1,50 @@
+/* UOS Version: 2.2 - May 4, 2009 */
+
+body{background:#fff;background-image:none;}
+
+ul{list-style:disc !important;margin:12px 0 !important;padding:0 !important}
+	ul li{list-style:disc !important;background: none !important;margin:0 0 2px 15px !important;padding:0 !important}
+	
+#wrapper{width:auto}
+
+	#globalheader{border-bottom:1px solid gray !important;margin:0 0 12px 0}
+	#header{width:auto; height:64px; display:block; margin:0}
+
+		#globalheader-search{display:none;}
+		#globalheader-links{display:none;}
+	
+	#mainnav {display:none}
+	.admin-menu, #DomainSwitchWrp, #DomainSwitchContentWpr, #globalheader-search, #mainnav-overlay, .mainnav-overylay-category-wpr {display:none}
+
+	#globalheader-logo {position:static; display:block; overflow:hidden;}
+
+	#layout{padding-left:0;padding-right:0}
+	
+		#layout-column-left{display:none}
+			
+			#banner{}
+			
+			#pagetitlearea{padding:0;margin:0 0 12px 0}
+				#pagetitlearea-tools{display:none;}
+			
+			#layout-column-main{width:auto !important;float:none !important;margin:0;clear:both}
+			
+				#layout-column-main .clear {height:auto !important}
+
+			#layout-column-right{width:216px !important;float:none !important;margin:0}
+		
+	#globalfooter-searchbar{display:none;}
+	.footer-pullup-wpr {display:none !important;}
+
+	#globalfooter-relatedlinks{display:none}
+	
+	#globalfooter-main{border-top:1px solid gray;padding:12px 0}
+		#globalfooter-main #globalfooter-tool-line1{display:none;}
+		#globalfooter-main #globalfooter-tool-line2{display:none;}
+
+.callout{border:1px solid gray;}	
+	.callout-content{border:none !important;background:none}
+	.callout .callout-top{background:none !important}
+	.callout .callout-bottom{background:none !important}
+	
+.select-free{display:none;}

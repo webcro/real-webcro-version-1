@@ -1,0 +1,1274 @@
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('branchLocator', function () {
+			return {
+				replace: true,
+				templateUrl: baseUrl + 'root/app/views/branch.tpl.html',
+				restrict: 'E',
+				controller: 'BranchCtrl',
+				controllerAs: 'branch'
+			}
+		});
+
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('capitalize', function () {
+            return {
+                require: 'ngModel',
+                link: function (scope, element, attrs, modelCtrl) {
+                    var capitalize = function (inputValue) {
+                        if (inputValue == undefined) inputValue = '';
+                        var capitalized = inputValue.toUpperCase();
+                        if (capitalized !== inputValue) {
+                            var selection = element[0].selectionStart;
+                            modelCtrl.$setViewValue(capitalized);
+                            modelCtrl.$render();
+                            element[0].selectionStart = selection;
+                            element[0].selectionEnd = selection;
+                        }
+                        return capitalized;
+                    }
+                    modelCtrl.$parsers.push(capitalize);
+                    capitalize(scope[attrs.ngModel]);
+                }
+            };
+        });
+
+})();
+(function() {
+
+  'use strict';
+
+  angular
+    .module('cardApp')
+    .directive('clickOutside', ['$window', '$parse', function ($window, $parse) {
+      return {
+        link: function(scope, el, attr) {
+          if (!attr.clickOutside) {
+            return;
+          }
+
+          var ignore;
+          if (attr.ignoreIf) {
+            ignore = $parse(attr.ignoreIf);
+          }
+
+          var nakedEl = el[0];
+          var fn = $parse(attr.clickOutside);
+
+          var handler = function(e) {
+            if (nakedEl === e.target || nakedEl.contains(e.target) || (ignore && ignore(scope))) {
+              return;
+            }
+
+            scope.$apply(fn);
+          };
+
+          $window.addEventListener('click', handler, true);
+
+          scope.$on('$destroy', function(e) {
+            $window.removeEventListener('click', handler);
+          });
+        }
+      };
+    }]);
+
+})();
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('containerExpand', function () {
+			return {
+				restrict: 'C',
+				scope: {
+					containerExpand: '='
+				},
+				link: function (scope, el, attrs) {
+					var header = $(el).find(".link-expand");
+					var content = $(el).find(".section-expand");
+
+					//convert string to boolean
+					var isContentVisible = false;
+
+					angular.element(document).ready(function () {
+						if (isContentVisible) {
+							content.slideDown();
+							$(el).addClass("expanded");
+							header.attr("aria-expanded", 'true').removeClass("collapsed").addClass("expanded");
+							$(el).find('.link-expand .collapsed').hide()
+							$(el).find('.link-expand .expanded').show()
+						}
+						else {
+							content.slideUp();
+							$(el).removeClass("expanded");
+							header.attr("aria-expanded", 'false').removeClass("expanded").addClass("collapsed");
+							$(el).find('.link-expand .collapsed').show()
+							$(el).find('.link-expand .expanded').hide()
+							scope.$eval(attrs.onExpand);
+						}
+
+						header.mousedown(function () {
+							header.css("outline", "0")
+						})
+
+						header.blur(function () {
+							header.css("outline", "")
+						})
+
+						// click event covers enter key
+						header.click(function () {
+							if (isContentVisible) {
+								content.slideUp();
+								$(el).removeClass("expanded");
+								isContentVisible = false;
+								header.attr("aria-expanded", 'false').toggleClass("expanded collapsed");
+								$(el).find('.link-expand .collapsed').show()
+								$(el).find('.link-expand .expanded').hide()
+							}
+							else {
+								content.slideDown();
+								$(el).addClass("expanded");
+								isContentVisible = true;
+								header.attr("aria-expanded", 'true').toggleClass("expanded collapsed");
+								$(el).find('.link-expand .collapsed').hide()
+								$(el).find('.link-expand .expanded').show()
+								scope.$eval(attrs.onExpand);
+							}
+						});
+
+						// header.bind('keydown keypress', function (event) {
+						// 	if (event.which === 13) {
+						// 		if (isContentVisible) {
+						// 			content.slideUp();
+						// 			$(el).removeClass("expanded");
+						// 			isContentVisible = false;
+						// 			header.attr("aria-expanded", 'false').toggleClass("expanded collapsed");
+						// 			$(el).find('.link-expand .collapsed').show()
+						// 			$(el).find('.link-expand .expanded').hide()
+						// 		}
+						// 		else {
+						// 			content.slideDown();
+						// 			$(el).addClass("expanded");
+						// 			isContentVisible = true;
+						// 			header.attr("aria-expanded", 'true').toggleClass("expanded collapsed");
+						// 			$(el).find('.link-expand .collapsed').hide()
+						// 			$(el).find('.link-expand .expanded').show()
+						// 			scope.$eval(attrs.onExpand);
+						// 		}
+						// 	}
+						// });
+
+					});
+				}
+			}
+		});
+
+})();
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('emailPredict', function ($timeout, $compile) {
+			return {
+				restrict: 'A',
+				require: 'ngModel',
+				link: function (scope, element, attrs, ngModel) {
+					angular.element(document).ready(function () {
+						$(element).emailpredict({
+							suggClass: "email-prediction",
+							lang: attrs.lang
+						});
+						$timeout(function () { $compile($('body').find('.error-email'))(scope); });
+					});
+
+					element.bind('blur', function () {
+						$timeout(function () { scope.$apply(setValue); });
+					});
+
+					element.bind('focus', function () {
+					});
+
+					element.bind('keydown', function (e) {
+						if (e.which === 39 || e.which === 9 || e.which === 13) {
+							$timeout(function () { scope.$apply(setValue); });
+						}
+					});
+
+					function setValue() {
+						var value = $(element).val();
+						ngModel.$setViewValue(value);
+						ngModel.$render();
+					}
+				}
+			}
+		});
+
+})();
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('equalHeightLabels', function ($timeout, $compile, $window) {
+			return {
+				restrict: 'A',
+				link: function (scope, element, attrs, ngModel) {
+
+					scope.$watch('showAddressModal', function (newVal) {
+						if (newVal) $timeout(function () { resizeLabels() })
+					});
+
+					angular.element($window).bind('resize', function () {
+						if (scope.showAddressModal) {
+							resizeLabels();
+						}
+					});
+
+					function resizeLabels() {
+						var maxH = 0;
+						var labels = $(element).find('label');
+						labels.css('height', 'auto');
+						labels.each(function () {
+							maxH = Math.max($(this).height(), maxH)
+						})
+						labels.css('height', maxH);
+					}
+				}
+			}
+		});
+
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('alignLabel', function ($window) {
+            return {
+                restrict: 'A',
+                scope: {
+                    alignLabel: '@'
+                },
+                link: function (scope, element, attrs) {
+
+                    function setHeight() {
+                        if ($window.innerWidth <= parseInt(scope.alignLabel) && $window.innerWidth > 680) {
+                            $(element).height(attrs.targetHeight);
+                        }
+                        else {
+                            $(element).height("auto");
+                        }
+                    }
+
+
+                    setHeight();
+
+                    angular.element($window).bind('resize', function () {
+                        setHeight();
+                    });   
+
+                }
+            }
+        });
+
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('googlePlace', ['$timeout', function ($timeout) {
+            var componentForm = {
+                street_number: 'long_name',
+                route: 'long_name',
+                locality: 'long_name',
+                administrative_area_level_1: 'short_name',
+                country: 'long_name',
+                postal_code: 'short_name'
+            };
+            var mapping = {
+                street_number: 'number',
+                route: 'street',
+                locality: 'city',
+                administrative_area_level_1: 'province',
+                country: 'country',
+                postal_code: 'postal'
+            };
+            return {
+                require: 'ngModel',
+                scope: {
+                    ngModel: '=',
+                    details: '=?'
+                },
+                link: function (scope, element, attrs, model) {
+                    var options = {
+                        types: attrs.googlePlace !== "" ? attrs.googlePlace.split(',') : [],
+                        componentRestrictions: { country: "ca" }
+                    };
+                    scope.addressApplied = true;
+
+                    scope.gPlace = new google.maps.places.Autocomplete(element[0], options);
+
+                    $timeout(function () {
+                        $('.pac-container').attr('aria-live', 'assertive')
+                    }, 1000);
+
+                    $('.pac-item').attr('role', 'option')
+
+
+                    element.bind('keyup', function (event) {
+
+                        if (scope.$parent.addressType == "residential") {
+                            scope.$parent.poboxError = poboxCheck(element.val());
+                            scope.$root.addressFieldPoboxError = scope.$parent.poboxError;
+                            if (!scope.$parent.poboxError) {
+                                scope.$parent.poboxErrorNum = false;
+                                scope.$parent.poboxErrorName = false;
+                            }
+
+                        }
+                        //ng-enter="nextStep(data)"
+
+                        //resetting fields when user starts typing again (exclude enter)
+                        if (event.keyCode != 13) {
+                            if (scope.addressApplied == true) {
+                                if (scope.$parent.addressType == "residential") {
+                                    scope.$parent.data.userCurrentAddress.streetNum = "";
+                                    scope.$parent.data.userCurrentAddress.streetName = "";
+                                    scope.$parent.apStreetNameFull = "";
+                                    scope.$parent.data.userCurrentAddress.city = "";
+                                    scope.$parent.data.userCurrentAddress.province = "";
+                                    scope.$parent.data.userCurrentAddress.postalCode = "";
+                                }
+                                else if (scope.$parent.addressType == "previous") {
+                                    scope.$parent.data.userPrevAddress.streetNum = "";
+                                    scope.$parent.data.userPrevAddress.streetName = "";
+                                    scope.$parent.prevStreetNameFull = "";
+                                    scope.$parent.data.userPrevAddress.city = "";
+                                    scope.$parent.data.userPrevAddress.province = "";
+                                    scope.$parent.data.userPrevAddress.postalCode = "";
+                                }
+                                else {
+                                    scope.$parent.data.authUser.authUserAddress.streetNum = "";
+                                    scope.$parent.data.authUser.authUserAddress.streetName = "";
+                                    scope.$parent.auStreetNameFull = "";
+                                    scope.$parent.data.authUser.authUserAddress.city = "";
+                                    scope.$parent.data.authUser.authUserAddress.province = "";
+                                    scope.$parent.data.authUser.authUserAddress.postalCode = "";
+                                }
+                                scope.$parent.majorityError = false;
+                                scope.addressApplied = false;
+                            }
+                        }
+
+                    });
+
+                    function poboxCheck(val) {
+                        var patt = /^.*\s*box\s+\d+.*$/i;
+                        var patt2 = /^.*\s*p\.?o\.?\s*box.*$/i
+
+                        if (patt.test(val) || patt2.test(val)) {
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    google.maps.event.addListener(scope.gPlace, 'place_changed', function () {
+                        var place = scope.gPlace.getPlace();
+                        var details = place.geometry && place.geometry.location ? {
+                            latitude: place.geometry.location.lat(),
+                            longitude: place.geometry.location.lng()
+                        } : {};
+
+                        for (var i = 0; i < place.address_components.length; i++) {
+                            var addressType = place.address_components[i].types[0];
+                            if (componentForm[addressType]) {
+                                var val = place.address_components[i][componentForm[addressType]];
+                                details[mapping[addressType]] = val;
+                            }
+                        }
+
+                        details.formatted = place.formatted_address;
+                        details.placeId = place.place_id;
+
+                        scope.$apply(function () {
+                            if (scope.$parent.addressType === "residential") {
+                                scope.$parent.data.userCurrentAddress.streetNum = details["number"];
+                                scope.$parent.data.userCurrentAddress.streetName = details["street"].substring(0, 23);
+                                scope.$parent.apStreetNameFull = details["street"];
+                                scope.$parent.data.userCurrentAddress.city = details["city"];
+                                scope.$parent.data.userCurrentAddress.province = details["province"];
+                                scope.$parent.data.userCurrentAddress.postalCode = details["postal"];
+                            }
+                            else if (scope.$parent.addressType === "previous") {
+                                scope.$parent.data.userPrevAddress.streetNum = details["number"];
+                                scope.$parent.data.userPrevAddress.streetName = details["street"].substring(0, 23);
+                                scope.$parent.prevStreetNameFull = details["street"];
+                                scope.$parent.data.userPrevAddress.city = details["city"];
+                                scope.$parent.data.userPrevAddress.province = details["province"];
+                                scope.$parent.data.userPrevAddress.postalCode = details["postal"];
+                            }
+                            else {
+                                scope.$parent.data.authUser.authUserAddress.streetNum = details["number"];
+                                scope.$parent.data.authUser.authUserAddress.streetName = details["street"].substring(0, 23);
+                                scope.$parent.auStreetNameFull = details["street"];
+                                scope.$parent.data.authUser.authUserAddress.city = details["city"];
+                                scope.$parent.data.authUser.authUserAddress.province = details["province"];
+                                scope.$parent.data.authUser.authUserAddress.postalCode = details["postal"];
+                            }
+
+                            $timeout(function () {
+                                scope.$parent.checkProvince();
+
+                            });
+
+                            $timeout(function () {
+                                if (scope.$parent.addressType === "residential") {
+                                    scope.$parent.checkAgeOfMajority();
+
+                                    scope.$parent.checkAddress("addressModalForm", "apStreetNum");
+                                    scope.$parent.checkAddress("addressModalForm", "apStreetName");
+                                }
+                                else if (scope.$parent.addressType === "previous") {
+
+                                    scope.$parent.checkAddress("addressModalForm", "prevStreetNum");
+                                    scope.$parent.checkAddress("addressModalForm", "prevStreetName");
+                                }
+                                else if (scope.$parent.addressType === "auth") {
+
+                                    scope.$parent.checkAddress("addressModalForm", "auStreetNum");
+                                    scope.$parent.checkAddress("addressModalForm", "auStreetName");
+                                }
+                            });
+
+                            model.$setViewValue(element.val());
+
+							scope.addressApplied = true;
+
+							$timeout(function () {
+								if (!scope.$parent.isValidAddress()) {
+									scope.$parent.displayModalErrors();
+								}
+							});
+                        });
+                    });
+
+                    scope.$watch(function () { return $('.pac-container').html(); }, function (newVal, oldVal) {
+                        $('.pac-item').attr('role', 'option')
+                    });
+                }
+            };
+        }]);
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('isVisible', function ($window, $state, $rootScope, $timeout, ScrollFactory) {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs, ngModel) {
+
+									var raw = element[0];
+
+
+                  var overflowing = (attrs.overflowing == 'true');
+                }
+            }
+        });
+
+})();
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('numberFormatter', ['$timeout', function ($timeout) {
+			return {
+				restrict: 'A',
+				require: 'ngModel',
+				link: function (scope, element, attrs, ngModel) {
+					element.bind('keyup', function (e) {
+						var limit = attrs.maxlength;
+						if (element[0].value.length >= limit) {
+							ngModel.$setViewValue(element[0].value.substr(0, limit));
+							ngModel.$render();
+						}
+						scope.$apply(formatNumber);
+						$timeout(function () { ngModel.$validate });
+					});
+
+
+					function formatNumber() {
+						var value = ngModel.$viewValue;
+						if (value != null && value != undefined) {
+							value = value.replace(/[^0-9]/g, '');
+							ngModel.$setViewValue(value);
+							ngModel.$render();
+							$timeout(function () { ngModel.$validate });
+						}
+					}
+				}
+			}
+		}]);
+
+})();
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('maxLength', ['$timeout', function ($timeout) {
+			return {
+				restrict: 'A',
+				require: 'ngModel',
+				link: function (scope, element, attrs, ngModel) {
+					element.bind('keyup', function (e) {
+						var limit = attrs.maxlength;
+						if (element[0].value.length >= limit) {
+							ngModel.$setViewValue(element[0].value.substr(0, limit));
+							ngModel.$render();
+						}
+						$timeout(function () { ngModel.$validate });
+					});
+				}
+			}
+		}]);
+
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('modal', ['$rootScope', '$timeout', function ($rootScope, $timeout) {
+            return {
+                restrict: 'A',
+                scope: {
+                    modal: "=",
+                },
+                link: function (scope, element, attrs, ngModel) {
+
+                    var modalWindow = element[0].querySelector(".modal");
+
+                    var modalWindowQ = $(element).find(".modal");
+
+                    var firstToFocus = $(element).find(".first-to-focus");
+
+                    var firstToFocusMobile = $(element).find(".first-to-focus-mobile");
+
+                    var modalClose = $(element).find(".close-modal");
+
+                    var modalCloseMain = $(element).find(".close-modal-main");
+
+                    var modalAll = $(element).find("*");
+
+                    //add region role to all modals
+
+                    modalWindowQ.attr("role", "region");
+
+
+                    scope.$watch('modal', function (newVal, oldVal) {
+                        if (newVal == true) {
+                            $timeout(function () {
+                                modalWindow.focus();
+                            });  
+                        }
+                        else if ($rootScope.modalTrigger) {
+                            $timeout(function () {
+                                $rootScope.modalTrigger.focus();
+                            }, 100);    
+                        }
+                    });
+
+                    modalClose.bind('click', function (event) {
+                        scope.$apply(function () {
+                            scope.modal = false;
+                        });
+                    });
+
+                    modalClose.bind("keydown keypress", function (event) {
+                        if (event.which === 13) {
+                            scope.$apply(function () {
+                                scope.modal = false;
+                            });
+                            event.preventDefault();
+                        }
+                    });
+
+                    modalAll.bind("keydown keypress", function (event) {
+                        if (event.which === 27) {
+                            scope.$apply(function () {
+                                scope.modal = false;
+                            });
+                            event.preventDefault();
+                        }
+                    });
+
+                    modalCloseMain.bind("keydown keypress", function (event) {
+
+                        if (!event.shiftKey && event.keyCode == 9) {
+                            $timeout(function () {
+
+                                if (!firstToFocus.is(':visible') && firstToFocusMobile.length && firstToFocusMobile.is(':visible')) {
+                                    firstToFocusMobile.focus();
+                                }
+                                else {
+                                    firstToFocus.focus();
+                                    
+                                }
+
+                            }, 100);
+                        }
+
+                    });
+
+
+                    firstToFocus.bind("keydown keypress", function (event) {
+
+                        if (event.shiftKey && event.keyCode == 9) {
+                            $timeout(function () {
+                                modalCloseMain.focus();
+                            });  
+                        }
+
+                    });
+
+                    firstToFocusMobile.bind("keydown keypress", function (event) {
+
+                        if (!firstToFocus.is(':visible')) {
+                            if (event.shiftKey && event.keyCode == 9) {
+                                $timeout(function () {
+                                    modalCloseMain.focus();
+                                });
+                            }
+                        }
+                    });
+
+                    modalWindowQ.bind("keydown keypress", function (event) {
+                        if (event.shiftKey && event.keyCode == 9 && $(this).is(":focus")) {
+                            $timeout(function () {
+                                modalCloseMain.focus();
+                            });
+                        }
+                    });
+
+                }
+            }
+        }]);
+
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('modalTrigger', ['$rootScope', '$compile', function ($rootScope, $compile) {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs, ngModel) {
+
+                    var el = angular.element('<span class= "offscreen"> {{glContent.open_modal_window}}</span>');
+
+                    $compile(el)(scope);
+                    element.append(el);
+
+                    element.bind('click', function (event) {
+                        $rootScope.modalTrigger = $(element[0]);
+                    });
+
+                    element.bind("keydown keypress", function (event) {
+                        if (event.which === 13) {
+                            $rootScope.modalTrigger = $(element[0]);
+                            event.preventDefault();
+                        }
+                    });
+                }
+            }
+        }]);
+
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('error', function ($timeout) {
+            return {
+                restrict: 'C',
+                link: function (scope, element, attrs) {
+                    //get parent input field
+                    var inputElement = $(element).prevAll('input:first')[0];
+                    if (!inputElement) {
+                        inputElement = $(element).prevAll('select:first')[0];
+                    }
+
+                    element.on('click', function (event) {
+                        inputElement.focus();
+                    });
+                    element.on('keydown keypress', function (event) {
+                        var key = event.keyCode || event.which;
+                        if (key === 13) {
+                            inputElement.focus();
+                        }
+                    });
+                    //Add a11y string based on error type
+                    var a11yString = scope.$root.glContent.errors.error;
+                    var classes = element[0].classList;
+                    var offscreen = document.createElement('SPAN');
+                    offscreen.classList.add('off-screen');
+                    if (classes.contains('error-required')) {
+                        a11yString = a11yString + scope.$root.glContent.errors.error_required;
+                    } else if (classes.contains('error-invalid')) {
+                        a11yString = a11yString + scope.$root.glContent.errors.error_invalid;
+                    }
+                    offscreen.innerHTML = a11yString
+                    element[0].insertBefore(offscreen, element[0].childNodes[0]);
+                    element[0].setAttribute("aria-describedby", 'errMsgHelper');
+                    //Don't use aria-hidden in mobile. Causes issues with talkback (Android a11y)
+                    if (window.innerWidth > 768) {
+                        element[0].setAttribute("aria-hidden", 'true');
+                        //Change aria-hidden attribute. angular watch visibility not reliable enough, using input element on blur instead
+                        inputElement && inputElement.addEventListener('blur', function (event) {
+                            $timeout(function () {
+                                if ($(element).is(':visible')) {
+                                    element[0].setAttribute("aria-live", "assertive");
+                                } else {
+                                    element[0].removeAttribute("aria-live");
+                                }
+                                element[0].setAttribute("aria-hidden", $(element).is(':visible') ? 'false' : 'true');
+                            })
+                        })
+                    }
+                }
+            }
+        });
+
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('errorSummary', function ($timeout, $rootScope) {
+            return {
+                restrict: 'E',
+                replace: true,
+                templateUrl: baseUrl + 'root/app/views/errorsummary.tpl.html',
+                //scope: {
+                //    //errorNumber: "="
+                //},
+                link: function (scope, element, attrs) {
+
+                    scope.errorNumber = 3;
+
+                    scope.goToError = function () {
+                        //console.log("goToError");
+                        $('.error:visible').prevAll('input:first').focus();
+                        $('.error:visible').prevAll('select:first').focus();
+                    }
+
+                    $rootScope.showErrorSummary = function () {
+                        //console.log("showErrorSummary");
+                        //scope.show = true;
+                        //$(element).focus();
+                    }
+
+                    $rootScope.hideErrorSummary = function () {
+                       // console.log("hideErrorSummary");
+                        //scope.show = false;
+                        //$rootScope.errorNumber = 0;
+                    }
+
+                }
+            }
+        });
+
+})();
+
+(function() {
+
+  'use strict';
+
+  angular
+    .module('cardApp')
+    .directive('ngEnter', function () {
+      return function (scope, element, attrs) {
+        element.on('keydown keypress', function (event) {
+          var key = event.keyCode || event.which;
+          if(key === 13) {
+            scope.$apply(function (){
+                scope.$eval(attrs.ngEnter || attrs.ngClick, {$event:event});
+              });
+            event.preventDefault();
+          }
+        });
+      };
+    });
+
+})();
+
+(function() {
+
+  'use strict';
+
+  angular
+		.module('cardApp')
+    .directive('setFocus', ['$timeout', '$parse', function ($timeout, $parse) {
+        return {
+            link: function (scope, element, attrs) {
+                var model = $parse(attrs.setFocus);
+                scope.$watch(model, function (value) {
+                    if (value === true) {
+                        $timeout(function () {
+                            element[0].focus();
+                        });
+                    }
+                });
+                element.bind('blur', function () {
+                  $timeout(function () {
+                    scope.$apply(model.assign(scope, false));
+                  });
+
+                });
+            }
+        };
+    }]);
+
+})();
+
+(function() {
+
+  'use strict';
+
+  angular
+		.module('cardApp')
+    .directive('phoneFormatter', function() {
+      return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attrs, ngModel) {
+          element.bind('keyup change', function() {
+            scope.$apply(formatPhone);
+          });
+
+          function formatPhone() {
+            var value = ngModel.$viewValue;
+            if (value != null && value != undefined) {
+              value = value.replace(/[^0-9]/g, '');
+              if (value.length >= 4 && scope.lang === 'en' && value.substring(3, 4) != '-') {
+                value = value.substring(0, 3) + "-" + value.substring(3, value.length);
+							}
+
+							if (value.length >= 4 && scope.lang === 'fr' && value.substring(3, 4) != ' ') {
+								value = value.substring(0, 3) + " " + value.substring(3, value.length);
+							}
+
+              if (value.length >= 8 && value.substring(7, 8) != '-') {
+                value = value.substring(0, 7) + "-" + value.substring(7, value.length);
+							}
+
+							//ngModel.$setViewValue(value);
+							ngModel.$viewValue = value;
+							ngModel.modelValue = value.replace(/\D/g, '').replace(/(\d{3})(\d{7})/, "$1-$2");
+							scope.ngModel = value.replace(/\D/g, '').replace(/(\d{3})(\d{7})/, "$1-$2");
+							ngModel.$render();
+							ngModel.$commitViewValue();
+
+
+              //prevent repeating same digits
+              if(preventRepeat(value)) {
+                ngModel.$setValidity('pattern', false);
+              }
+            }
+          }
+
+          function preventRepeat(value) {
+            value = value.replace(/-/g, "");
+            var patt = /(^0{10}|1{10}|2{10}|3{10}|4{10}|5{10}|6{10}|7{10}|8{10}|9{10})$/i
+            if(patt.test(value)) {
+              return true;
+            }
+            return false;
+          }
+        }
+      }
+    });
+
+})();
+
+(function () {
+
+  'use strict';
+
+  angular
+    .module('cardApp')
+    .directive('progressBar', function () {
+      return {
+        replace: true,
+        templateUrl: baseUrl + 'root/app/views/progress-bar.tpl.html',
+        restrict: 'E',
+        scope: {
+          steps: "=",
+          current: "=",
+          mobsteps: "=",
+          mobcurrent: "="
+        },
+        link: function (scope, elem, attrs) {
+          scope.$watch('current', function (value) {
+            scope.position = Math.round((scope.current / scope.steps) * 100);
+            if (scope.position > 100) scope.position = 100;
+          });
+
+          scope.$watch('mobcurrent', function (value) {
+            scope.mobposition = Math.round((scope.mobcurrent / scope.mobsteps) * 100);
+            if (scope.mobposition > 100) scope.mobposition = 100;
+          });
+
+        }
+      }
+    });
+
+})();
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('section', function () {
+			return {
+				restrict: 'E',
+				link: function (scope, element, attrs, ngModel) {
+					//$(window).on('resize', function () {
+					//	if ($(window).width() > 680) {
+					//		//console.log('section-resize', $(element).children('ng-include')[0].getBoundingClientRect().bottom, ($('.container-right')[0].getBoundingClientRect().bottom - 150));
+					//		//console.log(scope.currentStep, $(element))
+					//		//console.log($(element).height() !== 0, $(element).children('ng-include'), $(element).hasClass(scope.currentStep), !scope.scrolling)
+					//		if ($(element).height() !== 0 && $(element).children('ng-include') && $(element).hasClass(scope.currentStep) && !scope.scrolling) {
+					//			if (($(element).children('ng-include').height() + 150 > $('.container-right').height()) || ($(element).children('ng-include')[0].getBoundingClientRect().bottom > ($('.container-right')[0].getBoundingClientRect().bottom - 150))) {
+					//				//console.log('adding')
+					//				$(element).addClass('auto-height')
+					//			}
+					//			else {
+					//					//console.log('removing')
+					//					$(element).removeClass('auto-height')
+					//			}
+					//		}		
+					//	}
+					//})
+				}
+			}
+		});
+
+})();
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('superscriptRecompile', ['$compile', function ($compile) {
+			return {
+				link: function (scope, el, attr) {
+					scope.$watch('product.promotion', function (newVal, oldVal) {
+						if (newVal && newVal !== oldVal && !scope.product.statement_a) {
+							var template = "<span>" + scope.product.promotion.replace(/<sup>([\d]|(\*+)|&(?!reg|Dagger)[^>]*;)<\/sup>/g, "<sup class='clickable' tabindex='-1' ng-click='$root.showDisclaimerModal = true' modal-trigger ng-enter>$1</sup>") + "</span>";;
+							el.append($compile(template.toString())(scope));
+						}
+					})
+					scope.$watch('product.statement_a', function (newVal, oldVal) {
+						if (newVal && newVal !== oldVal) {
+							var template = "<span>" + scope.product.statement_a.replace(/<sup>([\d]|(\*+)|&(?!reg|Dagger)[^>]*;)<\/sup>/g, "<sup class='clickable' tabindex='-1' ng-click='$root.showDisclaimerModal = true' modal-trigger ng-enter>$1</sup>") + "</span>";;
+							el.append($compile(template.toString())(scope));
+						}
+					})
+				}
+			};
+		}]);
+
+})();
+
+(function() {
+
+  'use strict';
+
+  angular
+    .module('cardApp')
+      .directive('tooltip', ['$timeout', '$window',  function ($timeout, $window) {
+      return {
+        replace: true,
+        templateUrl: baseUrl + 'root/app/views/tooltip.tpl.html',
+        restrict: 'E',
+        scope: {
+          content: "@",
+          direction: "=",
+          a11y: "@",
+          iden: "@"
+        },
+        link: function(scope, elem, attrs) {
+
+            scope.content = attrs.content;
+
+            scope.expand = function() {
+                if (scope.showTooltip) {
+                    scope.$eval(attrs.onExpand);
+                }
+            }
+
+            function setStyle() {
+
+                var containerWidth = $(elem).parents(".container-right-inner")[0].clientWidth;
+                var tooltipOffsetLeft = $(elem).parents(".container-right-inner").offset().left - $(elem).offset().left;
+
+                //var containerOffsetLeft = $(elem).parents(".container-right-inner")[0].offsetLeft;
+                //var marginLeft = tooltipOffsetLeft * -1;
+                //console.log("containerOffsetLeft", containerOffsetLeft, tooltipOffsetLeft, marginLeft);
+
+                scope.tooltipStyle = {
+                  "width": (containerWidth - 15) + "px",
+									"margin-left": tooltipOffsetLeft + 7.5 + "px",
+									"max-width": "500px"
+                };
+            }
+
+            $timeout(function () {
+                setStyle();
+            });
+
+            angular.element($window).bind('resize', function () {
+                setStyle();
+            });
+        }
+      }
+    }]);
+
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('printWrapper', function () {
+            return {
+                restrict: 'EA',
+                replace: true,
+                transclude: true,
+                templateUrl: baseUrl + 'root/app/views/print-wrapper.html',
+                link: function (scope, elem, attrs) {
+                    var title = '';
+                    var lang = 'en';
+									scope.baseUrl = baseUrl;
+									function print() {
+                        let w = window.open('', 'PRINT');
+                        w.document.write('<html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><title>' + title + '</title>');
+                        w.document.write('<link rel="stylesheet" href="' + baseUrl + 'root/styles/main.min.css" type="text/css" media="all" />');
+                        w.document.write('<link rel="stylesheet" href="' + baseUrl + 'root/styles/newWindowPrint.min.css" type="text/css" media="all" />');
+                        w.document.write('</head><body class="flex-cont flex-col ' + lang + ' ' + attrs.printWrapper + '">');
+                        w.document.write(angular.element(elem[0].querySelector('.html-print')).html());
+                        w.document.write('</body>');
+                        let script = '';
+                        script = 'function() {window.print();}';
+                        //setTimeout is required else print will occur before everything has loaded
+                        w.document.write('<script type="text/javascript">setTimeout(' + script + ', 250);</script>');
+                        w.document.write('</html>');
+                        w.document.close();
+                        w.focus();
+                    }
+
+                    scope.$on('open-print', function (event, params) {
+                        title = params && params.title || document.title;
+                        lang = params && params.lang || 'en';
+                        print();
+                    });
+
+                }
+            }
+        });
+
+})();
+
+(function () {
+
+    'use strict';
+
+    angular
+        .module('cardApp')
+        .directive('sameHeight', function ($window, $timeout) {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attrs) {
+
+                    $timeout(function () {
+                        function setHeight(selector) {
+
+                            var selectors = selector.split(",");
+
+                            selectors.forEach(function (el) {
+                                var highestBox = 0;
+
+                                var elementToSet = $(element).find(el);
+
+                                elementToSet.height("auto");
+
+                                elementToSet.each(function () {
+
+                                    if ($(this).height() > highestBox && $(this).is(":visible")) {
+                                        highestBox = $(this).height();
+                                    }
+
+                                });
+
+                                if ($window.innerWidth > attrs.minWindow) {
+                                    elementToSet.height(highestBox);
+                                }
+                                else {
+                                    elementToSet.height("auto");
+                                } 
+                            })
+
+   
+                        }
+
+                    
+                        setHeight(attrs.sameHeight);
+
+                        angular.element($window).bind('resize', function () {
+                           setHeight(attrs.sameHeight);
+                        });
+
+                    });  
+
+
+                }
+            }
+        });
+
+})();
+
+(function () {
+
+  'use strict';
+
+  angular
+    .module('cardApp')
+    .directive('tel', function () {
+      return {
+        replace: true,
+        templateUrl: baseUrl + 'root/app/views/tel.tpl.html',
+        restrict: 'E',
+        scope: {
+          num: "@"
+        },
+        link: function (scope, elem, attrs) {
+          var mobile = $(elem).find('.mobile-only');
+          var desktop = $(elem).find('.mobile-hide');
+
+          if (window.innerWidth <= 768) {
+            mobile.attr('aria-hidden', 'false');
+            desktop.attr('aria-hidden', 'true');
+          } else {
+            mobile.attr('aria-hidden', 'true');
+            desktop.attr('aria-hidden', 'false');
+          }
+
+        }
+      }
+    });
+
+})();
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('validateOnClick', function ($timeout, $compile) {
+			return {
+				restrict: 'A',
+				require: '^form',
+				link: function (scope, element, attrs, form) {
+					element.on('click', function () {
+						angular.forEach(form.$error, function (field) {
+							angular.forEach(field, function (errorField) {
+								$timeout(function () { errorField.$setTouched() }, 0);
+							})
+						});
+					})
+				}
+			}
+		});
+
+})();
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.directive('validateOnEnter', function ($timeout, $compile) {
+			return {
+				restrict: 'A',
+				require: '^form',
+				link: function (scope, element, attrs, form) {
+					element.on('keydown keypress', function (event) {
+						var key = event.keyCode || event.which;
+						if (key === 13) {
+							angular.forEach(form.$error, function (field) {
+								angular.forEach(field, function (errorField) {
+									$timeout(function () { errorField.$setTouched() }, 0);
+								})
+							});
+							event.preventDefault();
+						}
+					});
+				}
+			}
+		});
+
+})();
+

@@ -1,0 +1,3898 @@
+angular
+  .module('cardApp')
+  .controller('mainCtrl', mainCtrl);
+
+/**
+ * Due to the 1 page design, tab and alt-tab is not great for accessbility and the following troubles has been noted as follows
+ * 1. If user returns to the first section (intro), user has to tab through the entire app again to return the the last section git#364
+ *    Soln; A helper link has been added to the bottom of each section that allows user to skip last section. 
+ *          Button is styled akin to the 'Skip to main content' button in the header. (they only show up when focused on)
+ * 2. The user cannot easly access the header/footer of the app. They must alt-tab/tab through the entire app before they can reach these sections. git#365
+ *    Soln; Alt tab no longer lets the user return to the previous section. Instead it will jump directly to the header. Similarly, tabbing out of the header
+ *          will jump directly back to the current section the user is on. To let the user return to the previous section, a helper link has been added 
+ *          to the top of each section that allows user to return to the previous section. Button is styled akin to the 'Skip to main content' button in the header.
+ */
+function mainCtrl($scope, $rootScope, ScrollFactory, DataFactory, $timeout, $window) {
+  $rootScope.isLoaded = true;
+
+  $scope.focusTop = function () {
+    if ($rootScope.progressCurrent) {
+      $('#progressLabel').focus();
+    } else {
+      $('#linkFaq').focus();
+    }
+  }
+
+  $scope.gotoCurrentSection = function () {
+    if ($rootScope.currentStep != 'intro') {
+      var position = $('section.' + $rootScope.currentStep).offset().top - 70;
+      $('section.' + $rootScope.currentStep).find('h1').first()[0].focus();
+      $('.container-right').scrollTop(position);
+    }
+  }
+
+  $scope.goToLastSection = function () {
+    ScrollFactory.goToStep(ScrollFactory.getLastStep());
+  }
+
+  $scope.gotoPrevSection = function (stepName) {
+    ScrollFactory.goToStep(ScrollFactory.getPrevStep(stepName));
+  }
+
+	$scope.getLastStep = ScrollFactory.getLastStep;
+
+	var container = $('.container-right');
+	container.on('scroll', _.debounce(function () {
+		if ($window.innerWidth > 640) {
+		$timeout.cancel(theTimeout)
+		var theTimeout = $timeout(function () { 
+		$('ng-include').each(function (i, raw) {
+			if (isVisible(raw, false)) {
+				$(raw).css("opacity", 1);
+				if ($rootScope.currentStep !== $(raw).attr('name') && !$rootScope.scrolling) {
+					//console.log($rootScope.currentStep, attrs.name);
+					$rootScope.currentStep = $(raw).attr('name');
+					ScrollFactory.goToStep($(raw).attr('name'), 500)
+				}
+			}
+			else {
+				$(raw).css("opacity", 0.2);
+			}
+			
+			})
+		}, 100)
+
+		}
+	}, 100, { 'leading': false, 'trailing': true }));
+
+	function isVisible(element, fullyInView) {
+		var rect = element.getBoundingClientRect();
+		var pageTop = $(window).scrollTop() + 70;
+		var pageBottom = pageTop + $('.container-right').height();
+
+		var containerHeight = $('.container-right').height();
+		var elementTop = $(element).offset().top;
+		var elementBottom = elementTop + $(element).height();
+		if (fullyInView === true) {
+			return ((elementTop <= pageBottom) && (elementBottom >= pageTop));
+		} else {
+			return ((elementTop <= pageBottom) && (elementBottom >= pageTop));
+		}
+	}
+
+}
+
+angular
+  .module('cardApp')
+  .controller('introCtrl', introCtrl);
+
+function introCtrl($scope, $q, $window, $rootScope, $timeout, $state, ScrollFactory, DataFactory) {
+
+	$scope.content = DataFactory.appData.content;
+
+	//wait for loading to finish
+	$scope.localContent = DataFactory.appData.content.intro;
+	$rootScope.$watch('loading', function (newVal, oldVal) {
+		//console.log('loading', newVal, oldVal)
+		if (newVal !== oldVal && !newVal) {
+			$scope.localContent = DataFactory.appData.content.intro;
+      $scope.product = DataFactory.appData.product;
+      //console.log($scope.product);
+			if ($scope.product.name) $rootScope.cardNameStripped = $scope.product.name.replace(/<sup>[^<]*<\/sup>/g, "");
+			if ((DataFactory.appData.product.minPersonalIncome && DataFactory.appData.product.minPersonalIncome !== "0.00") || (DataFactory.appData.product.minHouseholdIncome && DataFactory.appData.product.minHouseholdIncome !== "0.00")) {
+				$rootScope.showMinWarning = true;
+				$scope.minPersonalIncome = Number(DataFactory.appData.product.minPersonalIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d(\s\$)?$/, '$1');
+				$scope.minHouseholdIncome = Number(DataFactory.appData.product.minHouseholdIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d(\s\$)?$/, '$1');
+				if (DataFactory.appData.product.minAssetIncome) {
+					$scope.showAssetWarning = true;
+					$scope.minAsset = Number(DataFactory.appData.product.minAssetIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d(\s\$)?$/, '$1');
+				}
+			}
+			$rootScope.scrolling = false;
+			$rootScope.isLoaded = true;
+
+			var productErrorTest = (location.search.split('perror=')[1] || '').split('&')[0];
+			if (productErrorTest) $timeout(function () { $state.go("errorProduct") });
+			//$(window).trigger('resize')
+		}
+	})
+
+	var url = window.location.href;
+	if (url.indexOf('lang=en') !== -1) {
+		$rootScope.otherLangUrl = url.replace(/lang=en/, 'lang=fr');
+	}
+	else if (url.indexOf('lang=fr') !== -1) {
+		$rootScope.otherLangUrl = url.replace(/lang=fr/, 'lang=en');
+	}
+	else if (incoming_lang === 'en') {
+		$rootScope.otherLangUrl = window.location.origin + window.location.pathname + window.location.search + "&lang=fr";
+	}
+	else $rootScope.otherLangUrl = window.location.origin + window.location.pathname + window.location.search + "&lang=en";
+
+
+	$scope.nextStep = function () {
+		DataFactory.appData.applicant.appState.intro = true;
+		if (sff === "true" || incoming_partnercode || $rootScope.product.asc === "5DW002" || ($rootScope.product.asc === "WJW346" && $rootScope.product.productCode === "MC2")) {
+			ScrollFactory.showStep("infoBox");
+			ScrollFactory.goToStep("infoBox");
+		}
+		else {
+			ScrollFactory.showStep("areYouClient");
+			ScrollFactory.goToStep("areYouClient");
+		}
+  }
+}
+angular
+  .module('cardApp')
+  .controller('areYouClientCtrl', areYouClientCtrl);
+
+
+function areYouClientCtrl($scope, $rootScope, $window, ScrollFactory, DataFactory) {
+
+  $scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.are_you_client;
+	if ($rootScope.reviewBack || $rootScope.edit) {
+		$scope.noSelected = true;
+	}
+
+	$scope.nextStep = function () {
+		DataFactory.appData.applicant.appState.areYouClient = true;
+		$scope.noSelected = true;
+    ScrollFactory.showStep("infoBox");
+    ScrollFactory.goToStep("infoBox");
+	}
+
+  $scope.prevStep = function() {
+    ScrollFactory.showStep("intro");
+    ScrollFactory.goToStep("intro");
+  }
+}
+
+angular
+  .module('cardApp')
+  .controller('infoBoxCtrl', infoBoxCtrl);
+
+
+function infoBoxCtrl($scope, $rootScope, ScrollFactory, DataFactory) {
+  $scope.localContent = DataFactory.appData.content.info_box;
+	$scope.foo = "This data is from data-binding in topCtrl."
+	$rootScope.progressCurrent = 1;
+    $rootScope.progressMobCurrent = 1;
+
+    $scope.infoOpened = false;
+
+    $scope.nextStep = function (layout) {
+
+			if (layout == 'desktop' || (layout == 'mobile' && $scope.infoOpened)) {
+				DataFactory.appData.applicant.appState.infoBox = true;
+				ScrollFactory.showStep("name");
+        ScrollFactory.goToStep("name");
+      }
+
+    //window.scrollTo(window.scrollX, window.scrollY - 1);
+    //$window.scrollTo($window.scrollX, $window.scrollY + 1);
+
+    // var element = angular.element('#some-element');
+    // scroll.to(element, 100, 400);
+  }
+}
+
+angular
+  .module('cardApp')
+  .controller('nameCtrl', nameCtrl);
+
+
+function nameCtrl($scope, $rootScope, $timeout, $filter, ScrollFactory, DataFactory) {
+
+	$rootScope.progressCurrent = 2;
+	$rootScope.progressMobCurrent = 2;
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.name;
+
+	$scope.data = {};
+	$scope.data.userInfo = DataFactory.appData.applicant.userInfo;
+
+	$rootScope.name = $scope.data.userInfo.firstName;
+	$scope.$watch(function () { return $scope.Name.apFirstName.$viewValue }, function (newVal) {
+		$rootScope.name = $filter('capitalizefirst')(newVal);
+		if (newVal) {
+			$rootScope.cardName = newVal.substr(0, 1) + " " + $scope.data.userInfo.lastName;
+		}
+	})
+	$scope.$watch('data.userInfo.lastName', function (newVal) {
+		if ($scope.data.userInfo.firstName)
+			$rootScope.cardName = $scope.data.userInfo.firstName.substr(0, 1) + " " + newVal;
+	})
+
+	$scope.titleArray = Object.keys($scope.content.title).map(function (key) {
+		return { key: key, value: $scope.content.title[key] }
+	})
+
+	$rootScope.nameNextStep = function () {
+		if ($scope.Name.$valid) {
+            DataFactory.setData($scope.data);
+
+            $rootScope.hideErrorSummary();
+			ScrollFactory.showStep("contact");
+            ScrollFactory.goToStep("contact");
+
+			return true;
+		}
+		else {
+			angular.forEach($scope.Name.$error, function (field) {
+				angular.forEach(field, function (errorField, index) {
+					errorField.$setTouched();
+                    $rootScope.ga.validationErr(errorField.$name);
+                    $rootScope.errorNumber = index + 1;
+				})
+            });
+
+            $rootScope.showErrorSummary();
+
+
+		}
+	}
+
+	$scope.prevStep = function () {
+		ScrollFactory.showStep("infoBox");
+		ScrollFactory.goToStep("infoBox");
+	}
+}
+
+angular
+  .module('cardApp')
+  .controller('contactCtrl', contactCtrl);
+
+
+function contactCtrl($scope, $rootScope, $timeout, ScrollFactory, DataFactory, WinbackFactory, EmailCheckFactory) {
+	
+	$rootScope.progressCurrent = 3;
+	$rootScope.progressMobCurrent = 3;
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.contact;
+	$scope.validateEmail = validateEmail;
+
+	$scope.data = {};
+	$scope.data.userInfo = DataFactory.appData.applicant.userInfo;
+
+    if (DataFactory.appData.applicant.userInfo.homePhone) {
+        $scope.phone = DataFactory.appData.applicant.userInfo.homePhone;
+		}
+
+	if ($scope.phone && $scope.phone.substr(7, 1) !== "-") $timeout(function () { angular.element('#apHomePhone').triggerHandler('keyup') });
+	$scope.$watch('phone', function (newVal, oldVal) {
+		if (newVal) $timeout(function () { angular.element('#apHomePhone').triggerHandler('change'); });
+	});
+
+	function validateEmail() {
+		if ($scope.data.userInfo.email.length > 0) {
+			EmailCheckFactory.emailCheck($scope.data.userInfo.email).then(function (response) {
+				if (response === "fail") {
+					$scope.Contact.apEmail.$setValidity("", false);
+					$scope.Contact.apEmail.$setTouched();
+					return false;
+				}
+				else {
+					$scope.Contact.apEmail.$setValidity("", true);
+					$scope.Contact.apEmail.$setTouched();
+					return true;
+				}
+			});
+		}
+		else return true;
+	}
+
+
+	$rootScope.contactNextStep = function () {
+		if (!$rootScope.validatingAllSteps) {
+			EmailCheckFactory.emailCheck($scope.data.userInfo.email).then(function (response) {
+				if (response === "fail") {
+					$scope.Contact.apEmail.$setValidity("", false);
+					$scope.Contact.apEmail.$setTouched();
+				}
+				else {
+					$scope.Contact.apEmail.$setValidity("", true);
+
+					if ($scope.Contact.$valid) {
+						var data = angular.copy($scope.data);
+						data.userInfo.homePhone = $scope.phone.replace(/\D/g, '').replace(/(\d{3})(\d{7})/, "$1-$2");
+
+						DataFactory.setData(data);
+						WinbackFactory.winbackUpdate('01');
+						ScrollFactory.showStep("birthdayMonth");
+						ScrollFactory.goToStep("birthdayMonth");
+						return true;
+					}
+					else {
+						angular.forEach($scope.Contact.$error, function (field) {
+							angular.forEach(field, function (errorField) {
+								errorField.$setTouched();
+								$rootScope.ga.validationErr(errorField.$name);
+							})
+						});
+					}
+				}
+			});
+		}
+		else {
+			if ($scope.Contact.$valid) {
+				var data = angular.copy($scope.data);
+				data.userInfo.homePhone = $scope.phone.replace(/\D/g, '').replace(/(\d{3})(\d{7})/, "$1-$2");
+				DataFactory.setData(data);
+				WinbackFactory.winbackUpdate('01');
+				ScrollFactory.showStep("birthdayMonth");
+				ScrollFactory.goToStep("birthdayMonth");
+				return true;
+			}
+			else {
+				angular.forEach($scope.Contact.$error, function (field) {
+					angular.forEach(field, function (errorField) {
+						errorField.$setTouched();
+						$rootScope.ga.validationErr(errorField.$name);
+					})
+				});
+			}
+		}
+		
+  }
+
+  $scope.prevStep = function () {
+    ScrollFactory.showStep("name");
+    ScrollFactory.goToStep("name");
+  }
+
+}
+
+angular
+  .module('cardApp')
+  .controller('birthdayMonthCtrl', birthdayMonthCtrl);
+
+
+function birthdayMonthCtrl($scope, $rootScope, $timeout, DataFactory, ScrollFactory) {
+
+	$rootScope.progressCurrent = 4;
+	$rootScope.progressMobCurrent = 4;
+
+	$scope.localContent = DataFactory.appData.content['birthday'];
+	$scope.content = DataFactory.appData.content;
+
+	$scope.selectedMonth = DataFactory.appData.application.apBirthDateMM || $.trim(DataFactory.appData.applicant.userInfo.birthDay).substr(5, 2) || "";
+	DataFactory.appData.application.apBirthDateMM = $scope.selectedMonth;
+	$rootScope.continueDisabled = $scope.selectedMonth === "" ? true : false;
+	$scope.$watch(function () {
+		return DataFactory.appData.application.apBirthDateMM
+	}, function (newValue, oldValue) {
+		if (newValue) {
+			$scope.selectedMonth = newValue;
+		}
+		})
+	$rootScope.$watch('currentStep', function (newVal) {
+		if (newVal && newVal === "birthdayMonth" && $scope.selectedMonth) {
+			$rootScope.continueDisabled = false;
+		}
+	})
+
+	$scope.months = DataFactory.appData.content["month_list"];
+	$scope.monthsFull = DataFactory.appData.content["month_list_full"];
+	$scope.monthsArray = [];
+	Object.keys($scope.months).map(function (key) {
+		var value = $scope.months[key];
+		$scope.monthsArray.push( { key: key, value: value });
+	});
+
+	$scope.nextStep = function (month) {
+		DataFactory.appData.applicant.appState.birthdayMonth = true;
+		DataFactory.appData.application.apBirthDateMM = month;
+    ScrollFactory.showStep("birthdayDay");
+    ScrollFactory.goToStep("birthdayDay");
+	}
+
+	$rootScope.birthdayMonthNextStep = function () {
+		DataFactory.appData.application.apBirthDateMM = $scope.selectedMonth;
+		ScrollFactory.showStep("birthdayDay");
+		ScrollFactory.goToStep("birthdayDay");
+		return true;
+	}
+
+  $scope.prevStep = function () {
+    ScrollFactory.showStep("contact");
+    ScrollFactory.goToStep("contact");
+  }
+
+}
+
+angular
+  .module('cardApp')
+  .controller('birthdayDayCtrl', birthdayDayCtrl);
+
+
+function birthdayDayCtrl($scope, $rootScope, $timeout, DataFactory, ScrollFactory) {
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.birthday;
+	$scope.goToStep = ScrollFactory.goToStep;
+
+	$scope.selectedDay = DataFactory.appData.application.apBirthDateDD || $.trim(DataFactory.appData.applicant.userInfo.birthDay).substr(8, 2) || "";
+	DataFactory.appData.application.apBirthDateDD = $scope.selectedDay;
+	$rootScope.continueDisabled = $scope.selectedDay === "" ? true : false;
+	$scope.$watch(function () {
+		return DataFactory.appData.application.apBirthDateDD
+	}, function (newValue, oldValue) {
+		if (newValue) {
+			$scope.selectedDay = newValue;
+		}
+	});
+
+	$rootScope.$watch('currentStep', function (newVal) {
+		if (newVal && newVal === "birthdayDay" && $scope.selectedDay) {
+			$rootScope.continueDisabled = false;
+		}
+	})
+
+	$scope.birthMonth = $scope.content.month_list_full[DataFactory.appData.application.apBirthDateMM];
+	$scope.$watch(function () {
+		return DataFactory.appData.application.apBirthDateMM;
+	}, function (newValue, oldValue) {
+		if (newValue) $scope.birthMonth = $scope.content.month_list_full[DataFactory.appData.application.apBirthDateMM];
+	})
+
+	$scope.$watch(function () {
+		return DataFactory.appData.application.apBirthDateMM
+	}, function (newVal, oldVal) {
+		if (newVal && newVal.match("01|03|05|07|08|10|12")) {
+			$scope.daysLength = 31;
+		}
+		else if (newVal.match("02")) {
+			$scope.daysLength = 29;
+		}
+		else $scope.daysLength = 30;
+	})
+	
+
+	$scope.nextStep = function (day) {
+		DataFactory.appData.applicant.appState.birthdayDay = true;
+		if (day) DataFactory.appData.application.apBirthDateDD = day;
+		ScrollFactory.showStep("birthdayYear");
+		ScrollFactory.goToStep("birthdayYear");
+	}
+
+	$rootScope.birthdayDayNextStep = function () {
+		DataFactory.appData.application.apBirthDateDD = $scope.selectedDay;
+		ScrollFactory.showStep("birthdayYear");
+		ScrollFactory.goToStep("birthdayYear");
+		return true;
+	}
+
+  $scope.prevStep = function () {
+    ScrollFactory.showStep("birthdayMonth");
+    ScrollFactory.goToStep("birthdayMonth");
+  }
+}
+
+angular
+  .module('cardApp')
+  .controller('birthdayYearCtrl', birthdayYearCtrl);
+
+
+function birthdayYearCtrl($scope, $rootScope, DataFactory, ScrollFactory) {
+
+  $scope.content = DataFactory.appData.content;
+  $scope.localContent = DataFactory.appData.content.birthday;
+  $scope.data = {};
+  $scope.data.userInfo = {};
+  $scope.goToStep = ScrollFactory.goToStep;
+
+  $scope.birthMM = DataFactory.appData.application.apBirthDateMM;
+  $scope.birthMonth = $scope.content.month_list_full[$scope.birthMM];
+  $scope.birthDay = DataFactory.appData.application.apBirthDateDD;
+  $scope.$watch(function () {
+    return DataFactory.appData.application.apBirthDateMM
+  }, function (newVal) {
+    if (newVal) {
+      $scope.birthMM = newVal;
+      $scope.birthMonth = $scope.content.month_list_full[newVal];
+
+      $scope.data.userInfo.birthDay = DataFactory.appData.application.apBirthDateYYYY + '-' + ("00" + DataFactory.appData.application.apBirthDateMM).slice(-2) + '-' + ("00" + DataFactory.appData.application.apBirthDateDD).slice(-2);
+      if ($scope.data.userInfo.birthDay.length > 9) {
+				$rootScope.age = calculateAge($scope.data.userInfo.birthDay);
+				if ($rootScope.age < 65 && incoming_pcode !== "gold_us" && ($rootScope.edit || $rootScope.reviewBack)) ScrollFactory.showStep('insurance');
+				else if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+					$scope.data.bpConsent = null;
+					ScrollFactory.hideStep('insurance');
+				}
+      }
+    }
+  })
+
+	$rootScope.age = calculateAge($scope.data.userInfo.birthDay);
+	if ($rootScope.age < 65 && incoming_pcode !== "gold_us" && ($rootScope.edit || $rootScope.reviewBack)) ScrollFactory.showStep('insurance');
+	else if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+		$scope.data.bpConsent = null;
+		ScrollFactory.hideStep('insurance');
+	}
+
+  $scope.$watch(function () {
+    return DataFactory.appData.application.apBirthDateDD
+  }, function (newVal) {
+    if (newVal) {
+      $scope.birthDay = newVal;
+
+      $scope.data.userInfo.birthDay = DataFactory.appData.application.apBirthDateYYYY + '-' + ("00" + DataFactory.appData.application.apBirthDateMM).slice(-2) + '-' + ("00" + DataFactory.appData.application.apBirthDateDD).slice(-2);
+      if ($scope.data.userInfo.birthDay.length > 9) {
+				$rootScope.age = calculateAge($scope.data.userInfo.birthDay);
+				if ($rootScope.age < 65 && incoming_pcode !== "gold_us" && ($rootScope.edit || $rootScope.reviewBack)) ScrollFactory.showStep('insurance');
+				else if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+					$scope.data.bpConsent = null;
+					ScrollFactory.hideStep('insurance');
+				}
+      }
+    }
+
+  })
+
+	$scope.selectedYear = DataFactory.appData.application.apBirthDateYYYY || Number($.trim(DataFactory.appData.applicant.userInfo.birthDay).substr(0, 4)) || "";
+	DataFactory.appData.application.apBirthDateYYYY = $scope.selectedYear;
+  $rootScope.continueDisabled = $scope.selectedYear === "" ? true : false;
+  $scope.$watch(function () {
+    return DataFactory.appData.application.apBirthDateYYYY
+  }, function (newValue, oldValue) {
+    if (newValue) $scope.selectedYear = newValue;
+  })
+
+  $rootScope.$watch('currentStep', function (newVal) {
+    if (newVal && newVal === "birthdayYear" && $scope.selectedYear) {
+      $rootScope.continueDisabled = false;
+    }
+  })
+
+  $scope.yearPrefix = ["190", "191", "192", "193", "194", "195", "196", "197", "198", "199", "200"];
+    //$scope.currentDecadeIndex = 8;
+
+
+    //show decade by user selection
+    if ($scope.selectedYear && $scope.selectedYear != "") {
+        var dec = parseInt(($scope.selectedYear + "").charAt(2));
+        if (dec == 0) $scope.currentDecadeIndex = 10;
+        else $scope.currentDecadeIndex = dec;
+    }
+    else {
+        $scope.currentDecadeIndex = 8;
+    }
+
+	$scope.nextStep = function (year) {
+		DataFactory.appData.applicant.appState.birthdayYear = true;
+    if (year) DataFactory.appData.application.apBirthDateYYYY = year;
+    $scope.data.userInfo.birthDay = DataFactory.appData.application.apBirthDateYYYY + '-' + ("00" + DataFactory.appData.application.apBirthDateMM).slice(-2) + '-' + ("00" + DataFactory.appData.application.apBirthDateDD).slice(-2);
+		$rootScope.age = calculateAge($scope.data.userInfo.birthDay);
+		if ($rootScope.age < 65 && incoming_pcode !== "gold_us" && ($rootScope.edit || $rootScope.reviewBack)) ScrollFactory.showStep('insurance');
+		else if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+			$scope.data.bpConsent = null;
+			ScrollFactory.hideStep('insurance');
+		}
+    DataFactory.setData($scope.data);
+    ScrollFactory.showStep("address");
+    ScrollFactory.goToStep("address");
+  }
+
+  $rootScope.birthdayYearNextStep = function () {
+    DataFactory.appData.application.apBirthDateYYYY = $scope.selectedYear;
+    $scope.data.userInfo.birthDay = DataFactory.appData.application.apBirthDateYYYY + '-' + ("00" + DataFactory.appData.application.apBirthDateMM).slice(-2) + '-' + ("00" + DataFactory.appData.application.apBirthDateDD).slice(-2);
+		$rootScope.age = calculateAge($scope.data.userInfo.birthDay);
+		if ($rootScope.age < 65 && incoming_pcode !== "gold_us" && ($rootScope.edit || $rootScope.reviewBack)) ScrollFactory.showStep('insurance');
+		else if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+			$scope.data.bpConsent = null;
+			ScrollFactory.hideStep('insurance');
+		}
+    DataFactory.setData($scope.data);
+    ScrollFactory.showStep("address");
+    ScrollFactory.goToStep("address");
+    return true;
+  }
+
+  $scope.prevStep = function () {
+    ScrollFactory.showStep("birthdayDay");
+    ScrollFactory.goToStep("birthdayDay");
+  }
+
+  $scope.prevYearEnabled = function () {
+    var minDecade = (new Date().getFullYear() - 100).toString().substr(2, 1);
+    return $scope.currentDecadeIndex > minDecade;
+  }
+
+  $scope.prevYear = function () {
+    if ($scope.prevYearEnabled()) {
+      $scope.currentDecadeIndex--;
+    }
+  }
+
+  $scope.nextYearEnabled = function () {
+    var maxDecade = 10;
+
+    var today = new Date();
+    var maxDOBYear = today.getFullYear() - 18;
+    var m = (today.getMonth() + 1) - $scope.birthMM;
+		if ((parseInt($scope.yearPrefix[$scope.currentDecadeIndex + 1] + "0") >= maxDOBYear) && (m < 0 || (m === 0 && $scope.birthDay > today.getDate()))) {
+      return false;
+    }
+    if ($scope.currentDecadeIndex < maxDecade) {
+      return true;
+    }
+  }
+
+  $scope.nextYear = function () {
+    if ($scope.nextYearEnabled()) {
+      $scope.currentDecadeIndex++;
+    }
+  }
+
+  function calculateAge(birthday) {
+    birthday = new Date(birthday);
+    var ageDifMs = Date.now() - birthday.getTime();
+    var ageDate = new Date(ageDifMs); // miliseconds from epoch
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  }
+
+  $scope.isYearVisible = function (year) {
+    var today = new Date();
+    var maxDOBYear = today.getFullYear() - 18;
+    var minDOBYear = today.getFullYear() - 100;
+    var year = parseInt(year);
+    var m = (today.getMonth() + 1) - $scope.birthMM;
+
+
+    if (((year > minDOBYear) || (year == minDOBYear && (m < 0 || (m === 0 && today.getDate() < $scope.birthDay)))) &&
+      ((year < maxDOBYear) || (year == maxDOBYear && (m > 0 || (m === 0 && today.getDate() >= $scope.birthDay))))) {
+      if ($scope.birthMM == "02" && $scope.birthDay == "29") {
+        return leapYear(year);
+      }
+      else return true;
+    }
+    return false;
+  }
+
+  function leapYear(year) {
+    var result;
+    year = parseInt(year);
+    return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+  }
+
+}
+
+angular
+  .module('cardApp')
+  .controller('addressCtrl', addressCtrl);
+
+
+function addressCtrl($scope, $rootScope, ScrollFactory, BranchFactory, DataFactory, $timeout) {
+
+	$rootScope.progressCurrent = 5;
+	$rootScope.progressMobCurrent = 5;
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.address;
+
+	$scope.data = {};
+	$scope.data.userCurrentAddress = DataFactory.appData.applicant.userCurrentAddress;
+	$scope.$watch('addressModalForm', function (form) {
+		if (form && DataFactory.appData.applicant.userCurrentAddress.streetName) addressModalDone();
+    });
+
+    $scope.$watch('$root.age', function () {
+        checkAgeOfMajority();
+    });
+
+	$scope.addressType = "residential";
+	$scope.showAddressModal = false;
+	$scope.addressModalFocus = false;
+	$scope.submittedModal = false;
+	$scope.addressModalDone = addressModalDone;
+    $scope.checkAddress = checkAddress;
+    $scope.checkProvince = checkProvince;
+	$scope.checkAgeOfMajority = checkAgeOfMajority;
+	$scope.isValidAddress = isValidAddress;
+	$scope.displayModalErrors = displayModalErrors;
+
+	if ($(window).width() <= 768) {
+		$scope.addressPlaceholder = "";
+	}
+	else {
+		$scope.addressPlaceholder = $scope.localContent.address_placeholder;
+	}
+    $(window).on('resize', function () {
+        if ($(window).width() <= 768) {
+            $scope.addressPlaceholder = "";
+            $scope.$apply();
+        }
+        else {
+            $scope.addressPlaceholder = $scope.localContent.address_placeholder;
+            $scope.$apply();
+        }
+    });
+
+    $scope.provinceArray = Object.keys($scope.content.province).map(function (key) {
+        return { key: key, value: $scope.content.province[key] };
+    });
+
+
+	function addressModalDone() {
+		$scope.submittedModal = true;
+		if ($scope.addressModalForm.$valid) {
+			$scope.showAddressModal = false;
+			if ($scope.data.userCurrentAddress.streetNum) {
+				$scope.apAddress = $scope.data.userCurrentAddress.streetNum + " " +
+					$scope.data.userCurrentAddress.streetName + ", " +
+					$scope.data.userCurrentAddress.city + ", " +
+					$scope.data.userCurrentAddress.province + ", Canada";
+			}
+			else {
+				$scope.apAddress = $scope.data.userCurrentAddress.streetName + ", " + $scope.data.userCurrentAddress.city + ", " + $scope.data.userCurrentAddress.province + ", Canada";
+			}
+		}
+	}
+
+    function checkAgeOfMajority() {
+       
+
+        var p = $scope.data.userCurrentAddress.province;
+        if (((p === "BC" || p === "NB" || p === "NL" || p === "NS" || p === "NT" || p === "NU" || p === "YT") && $rootScope.age < 19) || ((p === "AB" || p === "MB" || p === "ON" || p === "PE" || p === "QC" || p === "SK") && $rootScope.age < 18)) {
+            $scope.majorityError = true;
+            $timeout(function () {
+                $scope.Address.apAddress.$setValidity('majority', false);
+                $scope.addressModalForm.apProvince.$setValidity('majority', false);
+            });
+
+        }
+        else {
+            $scope.majorityError = false;
+            $timeout(function () {
+                $scope.Address.apAddress.$setValidity('majority', true);
+                $scope.addressModalForm.apProvince.$setValidity('majority', true);
+            });
+        }
+    }
+
+    function checkAddress(form, fieldName) {
+        var boxFrRegex = /s\.o\./i;
+
+        var invalidPOValues = [
+            'box\\s+\\d+\\w*', 'General\\s+Delivery', '\\s*GD\\s*',  //en
+            'BOITE\\s+\\d+\\w*', 'BOÎTE\\s+\\d+\\w*', 'Poste\\s+restante', '\\s*PR\\s*'//fr
+        ];
+
+        var invalidOtherValues = [
+            'Royal\\s+Bank\\s+of\\s+Canada', 'RBC', 'N/A', 'Banque\\s+Royale\\s+du\\s+Canada'
+        ];
+
+        var invalidPORegex = new RegExp(['(.*?(\\b', invalidPOValues.join('\\b|\\b'), '\\b)[^$]*)$'].join(''), 'i');
+
+		var invalidOtherRegex = new RegExp(['(.*?(^(\\s)*NA(\\s)*$|\\b', invalidOtherValues.join('\\b|\\b'), '\\b)[^$]*)$'].join(''), 'i');
+
+        var field = $scope[form][fieldName];
+        var otherField = fieldName === "apStreetNum" ? $scope[form]["apStreetName"] : $scope[form]["apStreetNum"];
+        var value = field.$viewValue;
+        var otherValue = otherField.$viewValue;
+        if ((fieldName === "apStreetNum" && otherValue !== "" && invalidPORegex.test(value + " " + otherValue)) || (fieldName === "apStreetName" && otherValue !== "" && invalidPORegex.test(otherValue + " " + value))) {
+            field.$setValidity('pobox', false);
+            $scope.poboxError = true;
+            $scope.poboxErrorNum = true;
+            $scope.poboxErrorName = true;
+        }
+        else if (invalidPORegex.test(value)) {
+            field.$setValidity('pobox', false);
+            $scope.poboxError = true;
+            if (fieldName === "apStreetNum") {
+                $scope.poboxErrorNum = true;
+            }
+            else if (fieldName === "apStreetName") {
+                $scope.poboxErrorName = true;
+            }
+        }
+        else if (invalidOtherRegex.test(value) || boxFrRegex.test(value) ) {
+            field.$setValidity('pobox', false);
+            $scope.addressError = true;
+            if (fieldName === "apStreetNum") {
+                $scope.addressErrorNum = false;
+            }
+            else if (fieldName === "apStreetName") {
+                $scope.addressErrorName = true;
+            }
+        }
+        else {
+            field.$setValidity('pobox', true);
+            $scope.poboxError = false;
+            if (fieldName === "apStreetNum") {
+                $scope.poboxErrorNum = false;
+            }
+            else if (fieldName === "apStreetName") {
+                $scope.poboxErrorName = false;
+            }
+        }
+
+    }
+
+	function checkProvince() {
+		var isValid = false;
+		var value = $scope.addressModalForm.apPostalCode.$viewValue;
+		var field = $scope.addressModalForm.apPostalCode;
+
+		if (!String.prototype.startsWith) {
+			String.prototype.startsWith = function (searchString, position) {
+				position = position || 0;
+				return this.indexOf(searchString, position) === position;
+			};
+		}
+
+		if (value) {
+
+			switch ($scope.addressModalForm.apProvince.$viewValue) {
+				case "AB":
+                    if (value.toUpperCase().startsWith("T")) isValid = true;
+					break;
+				case "BC":
+                    if (value.toUpperCase().startsWith("V")) isValid = true;
+					break;
+				case "MB":
+                    if (value.toUpperCase().startsWith("R")) isValid = true;
+					break;
+				case "NB":
+                    if (value.toUpperCase().startsWith("E")) isValid = true;
+					break;
+				case "NL":
+                    if (value.toUpperCase().startsWith("A")) isValid = true;
+					break;
+				case "NS":
+                    if (value.toUpperCase().startsWith("B")) isValid = true;
+					break;
+				case "NT":
+                    if (value.toUpperCase().startsWith("X")) isValid = true;
+					break;
+				case "NU":
+                    if (value.toUpperCase().startsWith("X")) isValid = true;
+					break;
+				case "ON":
+					if (value.toUpperCase().startsWith("K") ||
+						value.toUpperCase().startsWith("L") ||
+						value.toUpperCase().startsWith("M") ||
+						value.toUpperCase().startsWith("N") ||
+                        value.toUpperCase().startsWith("P")) isValid = true;
+					break;
+				case "PE":
+                    if (value.toUpperCase().startsWith("C")) isValid = true;
+					break;
+				case "QC":
+					if (value.toUpperCase().startsWith("G") ||
+						value.toUpperCase().startsWith("H") ||
+                        value.toUpperCase().startsWith("J")) isValid = true;
+					break;
+				case "SK":
+                    if (value.toUpperCase().startsWith("S")) isValid = true;
+					break;
+				case "YT":
+                    if (value.toUpperCase().startsWith("Y")) isValid = true;
+					break;
+				default:
+					break;
+			}
+			//test pattern
+			var regex = /^[A-Za-z]\d[A-Za-z][ ]?\d[A-Za-z]\d$/;
+
+			if (!value.match(regex)) isValid = false;
+
+			isValid ? field.$setValidity('', true) : field.$setValidity('', false);
+		}
+	}
+
+	function isValidAddress() {
+		return $scope.Address.$valid && $scope.addressModalForm.$valid
+	}
+
+	function displayModalErrors() {
+		$scope.showAddressModal = true;
+		$scope.submittedModal = true;
+		angular.forEach($scope.Address.$error, function (field) {
+			angular.forEach(field, function (errorField) {
+				$rootScope.ga.validationErr(errorField.$name);
+			});
+		});
+		angular.forEach($scope.addressModalForm.$error, function (field) {
+			angular.forEach(field, function (errorField) {
+				$rootScope.ga.validationErr(errorField.$name);
+			});
+		});
+	}
+	
+    $rootScope.addressNextStep = function () {
+		if (isValidAddress()) {
+            DataFactory.setData($scope.data);
+            if (!$rootScope.validatingAllSteps)
+                BranchFactory.getBranch($scope.data.userCurrentAddress.postalCode.replace(/\s/g, ''), "1");
+            ScrollFactory.showStep("mortgage");
+            ScrollFactory.goToStep("mortgage");
+            return true;
+        }
+        else {
+			displayModalErrors();
+        }
+    };
+
+    $scope.prevStep = function () {
+        ScrollFactory.showStep("birthdayYear");
+        ScrollFactory.goToStep("birthdayYear");
+    };
+}
+
+angular
+  .module('cardApp')
+  .controller('mortgageCtrl', mortgageCtrl);
+
+
+function mortgageCtrl($scope, $rootScope, ScrollFactory, DataFactory) {
+
+  $scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.mortgage;
+
+	$scope.data = {};
+	$scope.data.userExpenses = DataFactory.appData.applicant.userExpenses;
+
+	$rootScope.mortgageNextStep = function () {
+		if ($scope.Mortgage.$valid) {
+			DataFactory.setData($scope.data);
+			ScrollFactory.showStep("housing");
+			ScrollFactory.goToStep("housing");
+			return true;
+		}
+		else {
+			angular.forEach($scope.Mortgage.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+			});
+		}
+	}
+
+  $scope.prevStep = function() {
+    ScrollFactory.showStep("address");
+    ScrollFactory.goToStep("address");
+  }
+
+}
+
+angular
+  .module('cardApp')
+  .controller('housingCtrl', housingCtrl);
+
+
+function housingCtrl($scope, $rootScope, $state, ScrollFactory, DataFactory) {
+
+	$scope.content = DataFactory.appData.content;
+    $scope.localContent = DataFactory.appData.content.housing;
+
+	$scope.data = {};
+	$scope.data.userCurrentAddress = DataFactory.appData.applicant.userCurrentAddress;
+	if (DataFactory.appData.applicant.userCurrentAddress.addressSince) {
+		$scope.apLivingMonth = $.trim(DataFactory.appData.applicant.userCurrentAddress.addressSince).substr(8, 2);
+        $scope.apLivingYear = Number($.trim(DataFactory.appData.applicant.userCurrentAddress.addressSince).substr(0, 4));
+        $scope.apLivingYearMonth = new Date($scope.apLivingYear + "-" + $scope.apLivingMonth + "-20");
+	}
+
+	$scope.currentYear = (new Date()).getFullYear();
+	$scope.currentMonth = (new Date()).getMonth() + 1;
+    $scope.dateCompare = dateCompare;
+
+    if ($scope.currentMonth < 10) {
+        $scope.maxDate = $scope.currentYear + "-0" + ($scope.currentMonth + 1);
+    }
+    else {
+        $scope.maxDate = $scope.currentYear + "-" + ($scope.currentMonth + 1);
+    }
+
+    $scope.minDate = DataFactory.appData.application.apBirthDateYYYY + "-" + DataFactory.appData.application.apBirthDateMM;
+
+	$scope.$watch('apLivingYearMonth', function (newVal, oldVal) {
+        if (newVal && newVal !== oldVal) {
+            var month = newVal.getMonth() + 1;
+            $scope.apLivingMonth = month > 9 ? ("" + month) : ("0" + month);
+            $scope.apLivingYear = newVal.getFullYear();
+        }
+        $scope.dateCompare();
+    })
+
+    $scope.bindDates = function () {
+        if ($scope.apLivingMonth && $scope.apLivingYear) {
+            $scope.apLivingYearMonth = new Date($scope.apLivingYear + "-" + $scope.apLivingMonth + "-20");
+        }
+    }
+
+    //$scope.$watch('apLivingYear', function (newVal, oldVal) {
+    //    if (newVal && newVal !== oldVal) {
+
+    //        if ($scope.apLivingMonth) {
+    //            console.log("$scope.apLivingYear,", $scope.apLivingYear);
+    //            console.log("$scope.apLivingMonth,", $scope.apLivingMonth);
+    //            $scope.apLivingYearMonth = new Date($scope.apLivingYear + "-" + $scope.apLivingMonth);
+    //        }
+    //    }
+    //    $scope.dateCompare();
+    //})
+
+    //$scope.$watch('apLivingMonth', function (newVal, oldVal) {
+    //    if (newVal && newVal !== oldVal) {
+
+    //        if ($scope.apLivingYear) {
+    //            console.log("$scope.apLivingYear,", $scope.apLivingYear);
+    //            console.log("$scope.apLivingMonth,", $scope.apLivingMonth);
+    //            $scope.apLivingYearMonth = new Date($scope.apLivingYear + "-" + $scope.apLivingMonth);
+    //        }
+    //    }
+    //    $scope.dateCompare();
+    //})
+
+	$scope.monthArray = Object.keys($scope.content.month_list).map(function (key) {
+		return { key: key, value: $scope.content.month_list[key] };
+	})
+	$scope.housingArray = Object.keys($scope.content.housing_types).map(function (key) {
+		return { key: key, value: $scope.content.housing_types[key] };
+	})
+
+	var currentYear = new Date().getFullYear();
+	$scope.$watch(function () { return DataFactory.appData.application.apBirthDateYYYY }, function (newVal) {
+		if (newVal) {
+			var year = DataFactory.appData.application.apBirthDateYYYY;
+			$scope.years = [];
+			for (var i = 0; i < 100 && (currentYear - i) >= year; i++) {
+				$scope.years.push(currentYear - i);
+			}
+		}
+	})
+
+    function dateCompare() {
+		//console.log($scope.apLivingYear, $scope.currentYear, Number($scope.apLivingMonth), $scope.currentMonth);
+		//console.log($scope.apLivingYear == $scope.currentYear, Number($scope.apLivingMonth) > Number($scope.currentMonth))
+		if ($scope.apLivingMonth && $scope.apLivingYear) {
+            if ($scope.apLivingYear < DataFactory.appData.application.apBirthDateYYYY ||
+                ($scope.apLivingYear === DataFactory.appData.application.apBirthDateYYYY &&
+                    $scope.apLivingMonth < DataFactory.appData.application.apBirthDateMM)) {
+                $scope.Housing.apLivingYear.$setValidity('', false);
+                $scope.Housing.apLivingYearMonth.$setValidity('', false);
+                $scope.futureDateError = false;
+                //console.log("before DOB");
+            }
+            else if (($scope.apLivingYear == $scope.currentYear && Number($scope.apLivingMonth) > Number($scope.currentMonth)) || ($scope.apLivingYear > $scope.currentYear)) {
+                $scope.Housing.apLivingYear.$setValidity('', false);
+                $scope.Housing.apLivingYearMonth.$setValidity('', false);
+                $scope.futureDateError = true;
+            }
+
+            else {
+                $scope.Housing.apLivingYear.$setValidity('', true);
+                $scope.Housing.apLivingYearMonth.$setValidity('', true);
+                $scope.futureDateError = false;
+            }
+        }
+        //console.log("future date error", $scope.futureDateError)
+	}
+
+	function getAge(dateString) {
+		var today = new Date();
+		var birthDate = new Date(dateString);
+		var age = today.getFullYear() - birthDate.getFullYear();
+		var m = today.getMonth() - birthDate.getMonth();
+		if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+			age--;
+		}
+		return age;
+	}
+
+	$rootScope.housingNextStep = function () {
+        dateCompare();
+		if ($scope.Housing.$valid) {
+			//set previous address required, required if at current address for less than 2 years
+			$scope.data.userCurrentAddress.addressSince = $scope.apLivingYear + "-" + $scope.apLivingMonth + "-01";
+			var dateSince = new Date(angular.copy($scope.data.userCurrentAddress.addressSince));
+			if (getAge(angular.copy($scope.data.userCurrentAddress.addressSince)) >= 2) {
+				//ScrollFactory.removeStep('prevAddress', "housing");
+				$scope.data.previousAddressRequired = false;
+				DataFactory.setData($scope.data);
+				ScrollFactory.hideStep('prevAddress');
+				ScrollFactory.showStep('sin');
+				ScrollFactory.goToStep('sin');
+			} else {
+				$scope.data.previousAddressRequired = true;
+				DataFactory.setData($scope.data);
+				ScrollFactory.showStep('prevAddress');
+				ScrollFactory.goToStep('prevAddress');
+			}
+			return true;
+		}
+        else {
+            if (!$scope.apLivingYearMonth) {
+                $scope.Housing.apLivingYearMonth.$setValidity("", false);
+            }
+            $scope.Housing.apLivingMonth.$setTouched();
+			angular.forEach($scope.Housing.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+            });
+
+		}
+  }
+  
+  $scope.prevStep = function () {
+    ScrollFactory.showStep("mortgage");
+    ScrollFactory.goToStep("mortgage");
+  }
+}
+
+angular
+  .module('cardApp')
+  .controller('prevAddressCtrl', prevAddressCtrl);
+
+
+function prevAddressCtrl($scope, $rootScope, ScrollFactory, DataFactory) {
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.prev_address;
+	$scope.addressContent = DataFactory.appData.content.address;
+
+    $scope.data = {};
+	$scope.data.userPrevAddress = DataFactory.appData.applicant.userPrevAddress;
+	$scope.$watch('addressModalForm', function (form) {
+		if (form && DataFactory.appData.applicant.userPrevAddress.streetName) addressModalDone();
+	});
+
+	$scope.addressType = "previous";
+	$scope.showAddressModal = false;
+	$scope.addressModalFocus = false;
+	$scope.submittedModal = false;
+	$scope.addressModalDone = addressModalDone;
+	$scope.checkProvince = checkProvince;
+	$scope.checkAddress = checkAddress;
+	$scope.isValidAddress = isValidAddress;
+	$scope.displayModalErrors = displayModalErrors;
+
+	if ($(window).width() <= 768) {
+		$scope.addressPlaceholder = "";
+	}
+	else {
+		$scope.addressPlaceholder = $scope.localContent.address_placeholder;
+	}
+    $(window).on('resize', function () {
+        if ($(window).width() <= 768) {
+            $scope.addressPlaceholder = "";
+            $scope.$apply();
+        }
+        else {
+            $scope.addressPlaceholder = $scope.localContent.address_placeholder;
+            $scope.$apply();
+        }
+    });
+
+	$scope.prevRequired = DataFactory.appData.applicant.previousAddressRequired;
+    $scope.$watch(function () { return DataFactory.appData.applicant.previousAddressRequired; },
+        function (newVal, oldVal) {
+            if (newVal) $scope.prevRequired = newVal;
+        });
+
+    $scope.provinceArray = Object.keys($scope.content.province).map(function (key) {
+        return { key: key, value: $scope.content.province[key] };
+    });
+
+    $scope.housingArray = Object.keys($scope.content.housing_types).map(function (key) {
+        return { key: key, value: $scope.content.housing_types[key] };
+    });
+
+
+    function checkAddress(form, fieldName) {
+        var boxFrRegex = /s\.o\./i;
+
+        var invalidPOValues = [
+            'box\\s+\\d+\\w*', 'General\\s+Delivery', '\\s*GD\\s*',  //en
+            'BOITE\\s+\\d+\\w*', 'BOÎTE\\s+\\d+\\w*', 'Poste\\s+restante', '\\s*PR\\s*'//fr
+        ];
+
+        var invalidOtherValues = [
+            'Royal\\s+Bank\\s+of\\s+Canada', 'RBC', 'N/A', 'Banque\\s+Royale\\s+du\\s+Canada'
+        ];
+
+        var invalidPORegex = new RegExp(['(.*?(\\b', invalidPOValues.join('\\b|\\b'), '\\b)[^$]*)$'].join(''), 'i');
+
+		var invalidOtherRegex = new RegExp(['(.*?(^(\\s)*NA(\\s)*$|\\b', invalidOtherValues.join('\\b|\\b'), '\\b)[^$]*)$'].join(''), 'i');
+
+        var field = $scope[form][fieldName];
+        var otherField = fieldName === "prevStreetNum" ? $scope[form]["prevStreetName"] : $scope[form]["prevStreetNum"];
+        var value = field.$viewValue;
+        var otherValue = otherField.$viewValue;
+        if ((fieldName === "prevStreetNum" && otherValue !== "" && invalidPORegex.test(value + " " + otherValue)) || (fieldName === "prevStreetName" && otherValue !== "" && invalidPORegex.test(otherValue + " " + value))) {
+            field.$setValidity('pobox', false);
+            $scope.poboxError = true;
+            $scope.poboxErrorNum = true;
+            $scope.poboxErrorName = true;
+        }
+        else if (invalidPORegex.test(value)) {
+            field.$setValidity('pobox', false);
+            $scope.poboxError = true;
+            if (fieldName === "prevStreetNum") {
+                $scope.poboxErrorNum = true;
+            }
+            else if (fieldName === "prevStreetName") {
+                $scope.poboxErrorName = true;
+            }
+        }
+        else if (invalidOtherRegex.test(value) || boxFrRegex.test(value)) {
+            field.$setValidity('pobox', false);
+            $scope.addressError = true;
+            if (fieldName === "prevStreetNum") {
+                $scope.addressErrorNum = false;
+            }
+            else if (fieldName === "prevStreetName") {
+                $scope.addressErrorName = true;
+            }
+        }
+        else {
+            field.$setValidity('pobox', true);
+            $scope.poboxError = false;
+            if (fieldName === "prevStreetNum") {
+                $scope.poboxErrorNum = false;
+            }
+            else if (fieldName === "prevStreetName") {
+                $scope.poboxErrorName = false;
+            }
+        }
+
+    }
+
+	function addressModalDone() {
+		$scope.submittedModal = true;
+		if ($scope.addressModalForm.$valid) {
+			$scope.showAddressModal = false;
+			//$rootScope.showErrorSummary = false;
+			//$rootScope.errorSummaryFocus = false;
+			if ($scope.data.userPrevAddress.streetNum) {
+				$scope.prevAddress = $scope.data.userPrevAddress.streetNum + " " +
+					$scope.data.userPrevAddress.streetName + ", " +
+					$scope.data.userPrevAddress.city + ", " +
+					$scope.data.userPrevAddress.province + ", Canada";
+			}
+			else {
+				$scope.prevAddress = $scope.data.userPrevAddress.streetName + ", " + $scope.data.userPrevAddress.city + ", " + $scope.data.userPrevAddress.province + ", Canada";
+			}
+		}
+	}
+
+	function checkProvince() {
+		var isValid = false;
+		var value = $scope.addressModalForm.prevPostalCode.$viewValue;
+		var field = $scope.addressModalForm.prevPostalCode;
+
+		if (!String.prototype.startsWith) {
+			String.prototype.startsWith = function (searchString, position) {
+				position = position || 0;
+				return this.indexOf(searchString, position) === position;
+			};
+		}
+
+		if (value) {
+
+			switch ($scope.addressModalForm.prevProvince.$viewValue) {
+				case "AB":
+					if (value.toUpperCase().startsWith("T")) isValid = true;
+					break;
+				case "BC":
+					if (value.toUpperCase().startsWith("V")) isValid = true;
+					break;
+				case "MB":
+					if (value.toUpperCase().startsWith("R")) isValid = true;
+					break;
+				case "NB":
+					if (value.toUpperCase().startsWith("E")) isValid = true;
+					break;
+				case "NL":
+					if (value.toUpperCase().startsWith("A")) isValid = true;
+					break;
+				case "NS":
+					if (value.toUpperCase().startsWith("B")) isValid = true;
+					break;
+				case "NT":
+					if (value.toUpperCase().startsWith("X")) isValid = true;
+					break;
+				case "NU":
+					if (value.toUpperCase().startsWith("X")) isValid = true;
+					break;
+				case "ON":
+					if (value.toUpperCase().startsWith("K") ||
+						value.toUpperCase().startsWith("L") ||
+						value.toUpperCase().startsWith("M") ||
+						value.toUpperCase().startsWith("N") ||
+						value.toUpperCase().startsWith("P")) isValid = true;
+					break;
+				case "PE":
+					if (value.toUpperCase().startsWith("C")) isValid = true;
+					break;
+				case "QC":
+					if (value.toUpperCase().startsWith("G") ||
+						value.toUpperCase().startsWith("H") ||
+						value.toUpperCase().startsWith("J")) isValid = true;
+					break;
+				case "SK":
+					if (value.toUpperCase().startsWith("S")) isValid = true;
+					break;
+				case "YT":
+					if (value.toUpperCase().startsWith("Y")) isValid = true;
+					break;
+				default:
+					break;
+			}
+			//test pattern
+			var regex = /^[A-Za-z]\d[A-Za-z][ ]?\d[A-Za-z]\d$/;
+
+			if (!value.match(regex)) isValid = false;
+
+			isValid ? field.$setValidity('', true) : field.$setValidity('', false);
+		}
+	}
+
+	function isValidAddress() {
+		return ($scope.prevRequired && $scope.addressModalForm.$valid && $scope.PrevAddress.$valid) || (!$scope.prevRequired && $scope.PrevAddress.$valid);
+	}
+
+	function displayModalErrors() {
+		if (!$scope.addressModalForm.$valid) {
+			$scope.showAddressModal = true;
+			$scope.submittedModal = true;
+		}
+		angular.forEach($scope.PrevAddress.$error, function (field) {
+			angular.forEach(field, function (errorField) {
+				errorField.$setTouched();
+				$rootScope.ga.validationErr(errorField.$name);
+			});
+		});
+	}
+
+
+    $rootScope.prevAddressNextStep = function () {
+		if (isValidAddress()) {
+            DataFactory.setData($scope.data);
+            ScrollFactory.showStep("sin");
+            ScrollFactory.goToStep("sin");
+            return true;
+        }
+        else {
+			displayModalErrors();
+        }
+    };
+    $scope.prevStep = function () {
+        ScrollFactory.showStep("housing");
+        ScrollFactory.goToStep("housing");
+    };
+}
+
+angular
+  .module('cardApp')
+  .controller('keepScrollingCtrl', keepScrollingCtrl);
+
+
+function keepScrollingCtrl($scope, ScrollFactory, DataFactory) {
+  ScrollFactory.showStep("sin");
+  $scope.name = "TODO"
+  $scope.localContent = DataFactory.appData.content.keep_scrolling;
+}
+
+angular
+  .module('cardApp')
+  .controller('sinCtrl', sinCtrl);
+
+
+function sinCtrl($scope, $rootScope, $state, $timeout, ScrollFactory, DataFactory) {
+
+	$rootScope.progressCurrent = 6;
+	$rootScope.progressMobCurrent = 6;
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.sin;
+	$timeout(function () {
+		$('.faq-link').attr('href', $('.faq-link').attr('href').replace('https://online.royalbank.com', pub_domain))
+	})
+	$scope.data = {}
+	$scope.data.userInfo = DataFactory.appData.applicant.userInfo;
+    $scope.luhnCheck = luhnCheck;
+    $scope.preventNum = preventNum;
+
+	$scope.name = DataFactory.appData.applicant.userInfo.firstName;
+	$scope.$watch(function () { return DataFactory.appData.applicant.userInfo.firstName }, function (newVal, oldVal) {
+		if (newVal) $scope.name = newVal;
+	});
+	
+    function preventNum(e) {
+        if (e.which < 48 || e.which > 57) {
+            e.preventDefault();
+        }
+    }
+
+	function luhnCheck(sin) {
+		if (!sin.$viewValue) {
+			sin.$setValidity('', true)
+			return;
+		}
+		var re = /^([1-79]\d{8})?$/
+		var len = sin.$viewValue.length,
+			mul = 0,
+			prodArr = [
+				[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				[0, 2, 4, 6, 8, 1, 3, 5, 7, 9]
+			],
+			sum = 0;
+
+		while (len--) {
+			sum += prodArr[mul][parseInt(sin.$viewValue.charAt(len), 10)];
+			mul ^= 1;
+		}
+
+		var valid = sum % 10 === 0 && sum > 0;
+
+		if (sin.$viewValue.length === 9 && re.test(sin.$viewValue)) {
+			if (!valid)
+				sin.$setValidity('', false)
+			else
+				sin.$setValidity('', true)
+		}
+	};
+
+	function getAge(dateString) {
+		var today = new Date();
+		var birthDate = new Date(dateString);
+		var age = today.getFullYear() - birthDate.getFullYear();
+		var m = today.getMonth() - birthDate.getMonth();
+		if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+			age--;
+		}
+		return age;
+	}
+
+	$rootScope.sinNextStep = function () {
+		if ($scope.Sin.$valid) {
+			//store SIN as string (not number)
+			if ($scope.userInfo) {
+				var data = angular.copy($scope.data);
+				data.userInfo.sin = $scope.data.userInfo.sin.toString();
+			}
+
+			DataFactory.setData(data);
+			if ($rootScope.edit && !$rootScope.validatingAllSteps && $rootScope.validateAllSteps()) {
+				$rootScope.currentStep = "review";
+				$rootScope.edit = false;
+				$state.go('review')
+			}
+			else {
+				ScrollFactory.showStep("employment");
+				ScrollFactory.goToStep("employment");
+				return true;
+			}
+		}
+		else {
+			$scope.showAddressModal = true;
+			$scope.submittedModal = true;
+			angular.forEach($scope.Sin.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);
+				})
+			});
+		}
+	}
+
+	$scope.prevStep = function () {
+		if (getAge(DataFactory.appData.applicant.userCurrentAddress.addressSince) >= 2) {
+			ScrollFactory.showStep("housing");
+			ScrollFactory.goToStep("housing");
+		}
+		else {
+			ScrollFactory.showStep("prevAddress");
+			ScrollFactory.goToStep("prevAddress");
+		}
+	}
+}
+
+angular
+	.module('cardApp')
+	.controller('employmentCtrl', employmentCtrl);
+
+
+function employmentCtrl($scope, $rootScope, ScrollFactory, DataFactory) {
+
+	$rootScope.progressCurrent = 7;
+	$rootScope.progressMobCurrent = 7;
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.employment;
+
+	$scope.data = {};
+	$scope.data.userOccupation = DataFactory.appData.applicant.userOccupation;
+	if (DataFactory.appData.applicant.userOccupation.occupationId && checkOccupationCodesFalse()) {
+		ScrollFactory.showStep("occupation");
+		ScrollFactory.showStep("occupationDetails");
+	}
+
+	$scope.selected = DataFactory.appData.applicant.userOccupation.occupationId;
+	if ($scope.selected === "101" ||
+		$scope.selected === "106" ||
+		$scope.selected === "109" ||
+		$scope.selected === "110" ||
+		$scope.selected === "111" ||
+		$scope.selected === "112" ||
+		$scope.selected === "113")
+		$scope.selected = "60";
+	$scope.$watch(function () { return DataFactory.appData.applicant.userOccupation.occupationId }, function (newVal, oldVal) {
+		if (newVal && newVal !== oldVal) {
+			$scope.selected = DataFactory.appData.applicant.userOccupation.occupationId;
+			if ($scope.selected === "101" ||
+				$scope.selected === "106" ||
+				$scope.selected === "109" ||
+				$scope.selected === "110" ||
+				$scope.selected === "111" ||
+				$scope.selected === "112" ||
+				$scope.selected === "113")
+				$scope.selected = "60";
+		}
+	})
+
+	$scope.nextStep = function (employment) {
+		DataFactory.appData.applicant.appState.employment = true;
+		DataFactory.appData.application.apEmployment = employment;
+		$scope.employmentError = false;
+		if (employment === "employed") {
+			$scope.selected = "employed";
+			if (DataFactory.appData.applicant.userOccupation.occupationId && checkOccupationCodesTrue()) {
+				DataFactory.appData.applicant.userOccupation.occupationId = "";
+				DataFactory.appData.applicant.userOccupation.occupationType_other = "";
+			}
+			//ScrollFactory.readdStep("occupationDetails", "employment");
+			//ScrollFactory.readdStep("occupation", "employment");
+			//ScrollFactory.removeStep("student");
+			ScrollFactory.hideStep("student");
+
+			ScrollFactory.showStep("occupation");
+			ScrollFactory.goToStep("occupation");
+		}
+		else {
+			var oid = $scope.data.userOccupation.occupationId;
+			if (oid !== "101" && oid !== "106" && oid !== "109" && oid !== "110" && oid !== "111" && oid !== "112" && oid !== "113")
+				$scope.data.userOccupation.occupationId = employment;
+
+			ScrollFactory.hideStep("occupationDetails");
+			ScrollFactory.hideStep("occupation");
+			//ScrollFactory.removeStep("occupationDetails");
+			//ScrollFactory.removeStep("occupation");
+			if (employment === "60") {
+				//ScrollFactory.readdStep("student", "employment");
+				$scope.data.isStudent = true;
+				DataFactory.setData($scope.data);
+				ScrollFactory.showStep("student");
+				ScrollFactory.goToStep("student");
+			}
+			else {
+				//ScrollFactory.removeStep("student");
+				$scope.data.isStudent = false;
+				DataFactory.setData($scope.data);
+				ScrollFactory.hideStep("student");
+				ScrollFactory.showStep("financialSituation");
+				ScrollFactory.goToStep("financialSituation");
+			}
+		}
+	}
+
+	$rootScope.employmentNextStep = function () {
+		if ($scope.selected) {
+			//employment = DataFactory.appData.application.apEmployment;
+			$scope.employmentError = false;
+			if ($scope.selected !== '19' && $scope.selected !== '27' && $scope.selected !== '60') {
+				if (DataFactory.appData.applicant.userOccupation.occupationId && checkOccupationCodesTrue()) {
+					DataFactory.appData.applicant.userOccupation.occupationId = "";
+					DataFactory.appData.applicant.userOccupation.occupationType_other = "";
+				}
+				DataFactory.appData.application.apEmployment = "employed";
+
+				ScrollFactory.hideStep("student");
+
+				ScrollFactory.showStep("occupation");
+				ScrollFactory.goToStep("occupation");
+			}
+			else {
+				ScrollFactory.hideStep("occupationDetails");
+				ScrollFactory.hideStep("occupation");
+				if ($scope.selected === "60") {
+					ScrollFactory.showStep("student");
+					ScrollFactory.goToStep("student");
+				}
+				else {
+					ScrollFactory.hideStep("student");
+					ScrollFactory.showStep("financialSituation");
+					ScrollFactory.goToStep("financialSituation");
+				}
+			}
+			return true;
+		}
+		else {
+			$scope.employmentError = true;
+		}
+	}
+
+	$scope.prevStep = function () {
+		ScrollFactory.showStep("sin");
+		ScrollFactory.goToStep("sin");
+	}
+
+	function checkOccupationCodesTrue() {
+		return (DataFactory.appData.applicant.userOccupation.occupationId === "19" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "27" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "60" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "106" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "109" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "110" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "111" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "112" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "101" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "113"
+		);
+	};
+
+	function checkOccupationCodesFalse () {
+		return (DataFactory.appData.applicant.userOccupation.occupationId !== "19" &&
+			DataFactory.appData.applicant.userOccupation.occupationId !== "27" &&
+			DataFactory.appData.applicant.userOccupation.occupationId !== "60" &&
+			DataFactory.appData.applicant.userOccupation.occupationId !== "106" &&
+			DataFactory.appData.applicant.userOccupation.occupationId !== "109" &&
+			DataFactory.appData.applicant.userOccupation.occupationId !== "110" &&
+			DataFactory.appData.applicant.userOccupation.occupationId !== "111" &&
+			DataFactory.appData.applicant.userOccupation.occupationId !== "112" &&
+			DataFactory.appData.applicant.userOccupation.occupationId !== "101" &&
+			DataFactory.appData.applicant.userOccupation.occupationId !== "113"
+		);
+	};
+}
+
+angular
+  .module('cardApp')
+  .controller('occupationCtrl', occupationCtrl);
+
+
+function occupationCtrl($scope, $rootScope, ScrollFactory, DataFactory) {
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.occupation_info;
+
+	$scope.data = {};
+	$scope.data.userOccupation = DataFactory.appData.applicant.userOccupation;
+
+    $scope.occupationRequired = occupationRequired;
+
+    $scope.occupationErrorInvalid = $rootScope.glContent.errors.apOccupationDesc_invalid;
+    $scope.occupationErrorRequired = $rootScope.glContent.errors.apOccupationDesc_required;
+
+	$scope.occupationArray = Object.keys($scope.content.occupation).map(function (key) {
+		return { key: key, value: $scope.content.occupation[key] };
+	})
+
+	$scope.occupationDescription = $scope.localContent.occupation_desc;
+	$scope.$watch('data.userOccupation.occupationId', function (newVal, oldVal) {
+		if (newVal && newVal !== oldVal) {
+			if (newVal === "30") {
+				$scope.data.userOccupation.occupationType_attache = $scope.data.userOccupation.occupationType_other;
+				$scope.data.userOccupation.occupationType_business = "";
+                $scope.occupationDescription = $scope.localContent.occupation_desc_attache;
+                $scope.occupationErrorInvalid = $rootScope.glContent.errors.apOccupationDescType_invalid;
+                $scope.occupationErrorRequired = $rootScope.glContent.errors.apOccupationDescType_required;
+			}
+			else if (newVal === "54") {
+				$scope.data.userOccupation.occupationType_business = $scope.data.userOccupation.occupationType_other;
+				$scope.data.userOccupation.occupationType_attache = "";
+                $scope.occupationDescription = $scope.localContent.occupation_desc_business;
+                $scope.occupationErrorInvalid = $rootScope.glContent.errors.apOccupationDescBusinessType_invalid;
+                $scope.occupationErrorRequired = $rootScope.glContent.errors.apOccupationDescBusinessType_required;
+			}
+			else {
+				$scope.data.userOccupation.occupationType_attache = "";
+        $scope.data.userOccupation.occupationType_business = "";
+        $scope.occupationDescription = $scope.localContent.occupation_desc;
+        $scope.occupationErrorInvalid = $rootScope.glContent.errors.apOccupationDesc_invalid;
+        $scope.occupationErrorRequired = $rootScope.glContent.errors.apOccupationDesc_required;
+			}
+		}
+	})
+
+	function occupationRequired() {
+		if ($scope.data.userOccupation.occupationId &&
+				($scope.data.userOccupation.occupationId === "13" ||
+				$scope.data.userOccupation.occupationId === "19" ||
+				$scope.data.userOccupation.occupationId === "27" ||
+				$scope.data.userOccupation.occupationId === "60" ||
+				DataFactory.appData.applicant.userOccupation.occupationId === "13" ||
+				DataFactory.appData.applicant.userOccupation.occupationId === "19" ||
+				DataFactory.appData.applicant.userOccupation.occupationId === "27" ||
+				DataFactory.appData.applicant.userOccupation.occupationId === "60"))
+			return false;
+		else return true;
+	}
+
+	$rootScope.occupationNextStep = function () {
+		if ($scope.Occupation.$valid) {
+			if ($scope.data.userOccupation.occupationId === "60" || DataFactory.appData.applicant.userOccupation.occupationId === "60") {
+				$scope.data.isStudent = true;
+			}
+			else $scope.data.isStudent = false;
+			DataFactory.setData($scope.data);
+			ScrollFactory.showStep("occupationDetails");
+			ScrollFactory.goToStep("occupationDetails");
+			return true;
+		}
+		else {
+			angular.forEach($scope.Occupation.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+			});
+		}
+  }
+
+  $scope.prevStep = function () {
+    ScrollFactory.showStep("employment");
+    ScrollFactory.goToStep("employment");
+  }
+}
+
+angular
+  .module('cardApp')
+  .controller('occupationDetailsCtrl', occupationDetailsCtrl);
+
+
+function occupationDetailsCtrl($scope, $rootScope, $timeout, $state, ScrollFactory, DataFactory) {
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.occupation_details;
+
+	$scope.data = {};
+	$scope.data.userOccupation = DataFactory.appData.applicant.userOccupation;
+
+	if ($scope.data.userOccupation.workPhone && $scope.data.userOccupation.workPhone.substr(7, 1) !== "-") $timeout(function () { angular.element('#apWorkPhone').triggerHandler('keyup') });
+	$scope.$watch('data.userOccupation.workPhone', function (newVal, oldVal) {
+		if (newVal) $timeout(function () { angular.element('#apWorkPhone').triggerHandler('change'); });
+	})
+
+	$scope.apEmployedMonth = $.trim($scope.data.userOccupation.employedSince).substr(5, 2);
+    $scope.apEmployedYear = Number($.trim($scope.data.userOccupation.employedSince).substr(0, 4)) === 0 ? "" : Number($.trim($scope.data.userOccupation.employedSince).substr(0, 4));
+    $scope.apEmployedMonthYear = new Date($scope.apEmployedYear + "-" + $scope.apEmployedMonth + "-20");
+	
+    $scope.$watch('apEmployedMonthYear', function (newVal, oldVal) {
+        if (newVal && newVal !== oldVal) {
+            var month = newVal.getMonth() + 1;
+            $scope.apEmployedMonth = month > 9 ? ("" + month) : ("0" + month);
+            $scope.apEmployedYear = newVal.getFullYear();
+            $scope.dateCompare();
+        }
+    });
+
+    $scope.bindDates = function () {
+        if ($scope.apEmployedMonth && $scope.apEmployedYear) {
+            $scope.apEmployedMonthYear = new Date($scope.apEmployedYear + "-" + $scope.apEmployedMonth + "-20");
+        }
+    }
+
+
+	$scope.currentYear = (new Date()).getFullYear();
+	$scope.currentMonth = (new Date()).getMonth() + 1;
+	$scope.monthArray = Object.keys($scope.content.month_list).map(function (key) {
+		return { key: key, value: $scope.content.month_list[key] };
+	})
+	$scope.occupationArray = Object.keys($scope.content.occupation).map(function (key) {
+		return { key: key, value: $scope.content.occupation[key] };
+	})
+
+	var currentYear = new Date().getFullYear();
+	$scope.$watch(function () { return DataFactory.appData.application.apBirthDateYYYY }, function (newVal) {
+		if (newVal) {
+			var year = DataFactory.appData.application.apBirthDateYYYY;
+			$scope.years = [];
+			for (var i = 0; i < 100 && (currentYear - i) >= year; i++) {
+				$scope.years.push(currentYear - i);
+			}
+		}
+    })
+
+    if ($scope.currentMonth < 10) {
+        $scope.maxDate = $scope.currentYear + "-0" + ($scope.currentMonth + 1);
+    }
+    else {
+        $scope.maxDate = $scope.currentYear + "-" + ($scope.currentMonth + 1);
+    }
+
+    $scope.minDate = DataFactory.appData.application.apBirthDateYYYY + "-" + DataFactory.appData.application.apBirthDateMM;
+
+	$scope.occupationRequired = function() {
+		if (DataFactory.appData.applicant.userOccupation.occupationId &&
+				(DataFactory.appData.applicant.userOccupation.occupationId === "13" ||
+				DataFactory.appData.applicant.userOccupation.occupationId === "19" ||
+				DataFactory.appData.applicant.userOccupation.occupationId === "27" ||
+				DataFactory.appData.applicant.userOccupation.occupationId === "60"))
+			return false;
+		//else return DataFactory.appData.applicant.apEmployment === "employed";
+		else return true;
+	}
+
+    $scope.dateCompare = function () {
+		if ($scope.apEmployedMonth && $scope.apEmployedYear) {
+            if ($scope.apEmployedYear < DataFactory.appData.application.apBirthDateYYYY ||
+                ($scope.apEmployedYear === DataFactory.appData.application.apBirthDateYYYY &&
+                    $scope.apEmployedMonth < DataFactory.appData.application.apBirthDateMM)) {
+                $scope.OccupationDetails.apEmployedYear.$setValidity('', false);
+                $scope.OccupationDetails.apEmployedMonthYear.$setValidity('', false);
+                $scope.futureDateError = false;
+            }
+            else if (($scope.apEmployedYear == $scope.currentYear && Number($scope.apEmployedMonth) > Number($scope.currentMonth)) || $scope.apEmployedYear > $scope.currentYear) {
+                $scope.OccupationDetails.apEmployedYear.$setValidity('', false);
+                $scope.OccupationDetails.apEmployedMonthYear.$setValidity('', false);
+                $scope.futureDateError = true;
+            }
+
+            else {
+                $scope.OccupationDetails.apEmployedYear.$setValidity('', true);
+                $scope.OccupationDetails.apEmployedMonthYear.$setValidity('', true);
+                $scope.futureDateError = false;
+            }
+		}
+	}
+
+	$rootScope.occupationDetailsNextStep = function () {
+		$scope.dateCompare();
+		if ($scope.OccupationDetails.$valid) {
+			let data = angular.copy($scope.data);
+			data.userOccupation.workPhone = data.userOccupation.workPhone.replace(/\D/g, '').replace(/(\d{3})(\d{7})/, "$1-$2");
+			data.userOccupation.employedSince = $scope.apEmployedYear + "-" + $scope.apEmployedMonth + "-01";
+			DataFactory.setData(data);
+			if ($rootScope.edit && !$rootScope.validatingAllSteps && $rootScope.validateAllSteps()) {
+				$rootScope.currentStep = "review";
+				$timeout(function () { $state.go("review") });
+			}
+			else {
+				ScrollFactory.showStep("financialSituation");
+				ScrollFactory.goToStep("financialSituation");
+				return true;
+			}
+		}
+        else {
+            if (!$scope.apEmployedMonthYear) {
+                $scope.OccupationDetails.apEmployedMonthYear.$setValidity("", false);
+            }
+			angular.forEach($scope.OccupationDetails.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+            });
+
+		}
+  }
+
+  $scope.prevStep = function () {
+    ScrollFactory.showStep("occupation");
+    ScrollFactory.goToStep("occupation");
+  }
+}
+
+angular
+	.module('cardApp')
+	.controller('studentCtrl', studentCtrl);
+
+
+function studentCtrl($scope, $rootScope, $timeout, ScrollFactory, DataFactory, $state) {
+
+	$scope.data = {};
+	$scope.data.userEducation = DataFactory.appData.applicant.userEducation;
+	$scope.data.userOccupation = DataFactory.appData.applicant.userOccupation;
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.student_details;
+
+	$scope.currentYear = (new Date()).getFullYear();
+
+	$scope.specArray = Object.keys($scope.content.occupation_student).map(function (key) {
+		return { key: key, value: $scope.content.occupation_student[key] };
+	})
+	//needed in order to get 'other' to appear at the bottom of the list, object order is not tracked...
+	var other = $rootScope.lang === "fr" ? "Étudiant/Enfant" : "Student/Child";
+	$scope.specArray.push({ "key": "60", "value": other });
+	$scope.fieldArray = Object.keys($scope.content.field_of_study).map(function (key) {
+		return { key: key, value: $scope.content.field_of_study[key] };
+	})
+	$scope.typeArray = Object.keys($scope.content.type_of_school).map(function (key) {
+		return { key: key, value: $scope.content.type_of_school[key] };
+	})
+	$scope.levelArray = Object.keys($scope.content.level_of_education).map(function (key) {
+		return { key: key, value: $scope.content.level_of_education[key] };
+	})
+
+	var year = new Date().getFullYear();
+	$scope.years = [];
+	$scope.years.push(year);
+	for (var i = 1; i < 50; i++) {
+		$scope.years.push(year + i);
+	}
+
+	$scope.changeSpecialization = function() {
+		//reset fieldArray for occupations other than 'student - health sciences'
+		if ($scope.data.userOccupation.occupationId !== '109') {
+			$scope.fieldArray = Object.keys($scope.content.field_of_study).map(function(key) {
+				return { key: key, value: $scope.content.field_of_study[key] };
+			});
+		}
+
+		switch ($scope.data.userOccupation.occupationId) {
+		case '106':
+			$scope.data.userEducation.fieldOfStudy = 'Med';
+			$scope.data.userEducation.schoolType = 'Univ';
+			$scope.data.userEducation.educationLevel = 'Grad';
+			$scope.fieldDisabled = true;
+			$scope.schoolDisabled = true;
+			$scope.levelDisabled = true;
+			break;
+		case '109':
+			$scope.data.userEducation.schoolType = 'Univ';
+			$scope.fieldDisabled = false;
+			$scope.schoolDisabled = true;
+			$scope.levelDisabled = false;
+			$scope.fieldArray = Object.keys($scope.content.field_of_study_health_sciences).map(function(key) {
+				return { key: key, value: $scope.content.field_of_study_health_sciences[key] };
+			});
+			break;
+		case '110':
+			$scope.data.userEducation.educationLevel = 'Grad';
+			$scope.fieldDisabled = false;
+			$scope.schoolDisabled = false;
+			$scope.levelDisabled = true;
+			break;
+		case '111':
+			$scope.data.userEducation.fieldOfStudy = 'Law';
+			$scope.fieldDisabled = true;
+			$scope.schoolDisabled = false;
+			$scope.levelDisabled = false;
+			break;
+		case '112':
+			$scope.data.userEducation.fieldOfStudy = 'MBA';
+			$scope.fieldDisabled = true;
+			$scope.schoolDisabled = false;
+			$scope.levelDisabled = false;
+			break;
+		case '101':
+			$scope.data.userEducation.fieldOfStudy = 'Dentistry';
+			$scope.fieldDisabled = true;
+			$scope.schoolDisabled = false;
+			$scope.levelDisabled = false;
+			break;
+		case '113':
+			$scope.data.userEducation.schoolType = 'Univ';
+			$scope.data.userEducation.educationLevel = 'UnderGrad';
+			$scope.fieldDisabled = false;
+			$scope.schoolDisabled = true;
+			$scope.levelDisabled = true;
+			break;
+		default:
+			$scope.fieldDisabled = false;
+			$scope.schoolDisabled = false;
+			$scope.levelDisabled = false;
+			break;
+		}
+	};
+
+	$scope.changeSpecialization();
+
+	$rootScope.studentNextStep = function () {
+		if ($scope.Student.$valid) {
+      DataFactory.setData($scope.data);
+			if ($rootScope.edit && !$rootScope.validatingAllSteps && $rootScope.validateAllSteps()) {
+				$rootScope.currentStep = 'review';
+				$timeout(function () { $state.go('review') });
+			}
+			else {
+				ScrollFactory.showStep('financialSituation');
+				ScrollFactory.goToStep('financialSituation');
+				return true;
+			}
+		}
+		else {
+			$scope.showAddressModal = true;
+			$scope.submittedModal = true;
+			angular.forEach($scope.Student.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+			});
+		}
+	}
+
+	$scope.prevStep = function () {
+		ScrollFactory.showStep('employment');
+		ScrollFactory.goToStep('employment');
+	}
+
+}
+
+angular
+  .module('cardApp')
+  .controller('financialSituationCtrl', financialSituationCtrl);
+
+
+function financialSituationCtrl($scope, $rootScope, $state, $timeout, ScrollFactory, DataFactory) {
+
+	$scope.data = {};
+	$scope.data.userOccupation = DataFactory.appData.applicant.userOccupation;
+	$scope.data.userExpenses = DataFactory.appData.applicant.userExpenses;
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.financial_situation;
+
+	if ((DataFactory.appData.product.minPersonalIncome && DataFactory.appData.product.minPersonalIncome !== "0.00") || (DataFactory.appData.product.minHouseholdIncome && DataFactory.appData.product.minHouseholdIncome !== "0.00")) {
+		$scope.incomeWarningApplies = true;
+		$scope.minPersonalIncome = Number(DataFactory.appData.product.minPersonalIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+		$scope.minHouseholdIncome = Number(DataFactory.appData.product.minHouseholdIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+		if (DataFactory.appData.product.minAssetIncome) {
+			$scope.showAsset = true;
+			$scope.minAsset = Number(DataFactory.appData.product.minAssetIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+		}
+	}
+
+	$scope.incomeRequired = !(DataFactory.appData.applicant.userOccupation.occupationId &&
+		(DataFactory.appData.applicant.userOccupation.occupationId === "13" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "19" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "27" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "60"));
+	$scope.$watch(function () {
+		return DataFactory.appData.applicant.userOccupation.occupationId
+	}, function (newVal, oldVal) {
+		if (newVal !== oldVal) {
+			$scope.incomeRequired = !(DataFactory.appData.applicant.userOccupation.occupationId &&
+				(DataFactory.appData.applicant.userOccupation.occupationId === "13" ||
+					DataFactory.appData.applicant.userOccupation.occupationId === "19" ||
+					DataFactory.appData.applicant.userOccupation.occupationId === "27" ||
+					DataFactory.appData.applicant.userOccupation.occupationId === "60"));
+		}
+	})
+	$scope.earnRequired = earnRequired;
+	$scope.checkIncomeAndAssets = checkIncomeAndAssets;
+
+	$scope.incomeArray = Object.keys($scope.content.other_income).map(function (key) {
+		return { key: key, value: $scope.content.other_income[key] };
+	})
+
+	function earnRequired() {
+		return ($scope.data.userOccupation.otherIncome && $scope.data.userOccupation.otherIncome.length !== 0);
+	}
+
+	function checkIncomeAndAssets() {
+		var min_personal_income = Number(DataFactory.appData.product.minPersonalIncome);
+		var min_household_income = Number(DataFactory.appData.product.minHouseholdIncome);
+		var personal_income = angular.copy($scope.data.userOccupation.income) || 0;
+		var household_income = angular.copy($scope.data.userOccupation.otherIncome) || 0;
+		if ($scope.data.userOccupation.otherIncomeSource !== "OtherHousehold") {
+			personal_income = Number(personal_income) + Number(household_income);
+			household_income = personal_income;
+		} else {
+			household_income = Number(personal_income) + Number(household_income);
+		}
+		$timeout(function () {
+			$scope.incomeWarning = ($scope.FinancialSituation.apIncome.$touched && personal_income < min_personal_income && household_income < min_household_income);
+		})
+	}
+
+	$rootScope.financialSituationNextStep = function () {
+		if ($scope.FinancialSituation.$valid) {
+			//ScrollFactory.showStep(ScrollFactory.stepNoToName(ScrollFactory.stepNameToNo("financialSituation") + 1));
+			//ScrollFactory.goToStep(ScrollFactory.stepNoToName(ScrollFactory.stepNameToNo("financialSituation") + 1));
+			if (!earnRequired()) $scope.data.userOccupation.otherIncomeSource = "";
+			DataFactory.setData($scope.data);
+			if ($rootScope.edit && !$rootScope.validatingAllSteps && $rootScope.validateAllSteps()) {
+				$rootScope.currentStep = "review";
+				$timeout(function () { $state.go("review") });
+			}
+			else {
+				var stepToGo;
+				if (DataFactory.appData.applicant.product.pubCode === "westjet" || DataFactory.appData.applicant.product.pubCode === "westjet_world") {
+					stepToGo = "westJet";
+				}
+				else if (DataFactory.appData.applicant.product.pubCode === "cp_platinum") {
+					stepToGo = "asiaMiles";
+				}
+				else if (DataFactory.appData.applicant.product.pubCode === "ba_platinum") {
+					stepToGo = "britishAirways";
+				}
+				else if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+					$scope.data.bpConsent = null;
+					stepToGo = "identificationWord";
+				}
+				else {
+					stepToGo = "insurance";
+				}
+				ScrollFactory.showStep(stepToGo);
+				ScrollFactory.goToStep(stepToGo);
+				return true;
+			}
+		}
+		else {
+			angular.forEach($scope.FinancialSituation.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+			});
+		}
+  }
+
+	$scope.prevStep = function () {
+		if (DataFactory.appData.application.apEmployment !== "employed" &&
+			(DataFactory.appData.applicant.userOccupation.occupationId === "13" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "19" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "27" ||
+			DataFactory.appData.applicant.userOccupation.occupationId === "60")) {
+			ScrollFactory.showStep("employment");
+			ScrollFactory.goToStep("employment");
+		}
+		else {
+			ScrollFactory.showStep("occupationDetails");
+			ScrollFactory.goToStep("occupationDetails");
+		}
+  }
+
+}
+
+angular
+  .module('cardApp')
+  .controller('westJetCtrl', westJetCtrl);
+
+
+function westJetCtrl($scope, $rootScope, ScrollFactory, DataFactory) {
+
+	$rootScope.progressCurrent = 8;
+	$rootScope.progressMobCurrent = 8;
+
+	$scope.data = {};
+	$scope.data.membershipNum = DataFactory.appData.applicant.membershipNum;
+  $scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.west_jet;
+	$scope.data.flightFieldNum = DataFactory.appData.applicant.flightFieldNum;
+	$scope.data.promo = DataFactory.appData.applicant.promo;
+
+	//show flight number or employee ID field based on ASC code and pid1
+	if (sff) {
+		if ($rootScope.product.asc === "5BW003")
+			$scope.showEmployeeNum = true;
+		else
+			$scope.sff = sff === "true";
+	}
+
+	$rootScope.westJetNextStep = function () {
+		if ($scope.WestJet.$valid) {
+			if (!$scope.data.promo && $scope.data.flightFieldNum)
+				$scope.data.promo = $scope.data.flightFieldNum;
+			DataFactory.setData($scope.data);
+			if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+				ScrollFactory.showStep("identificationWord");
+				ScrollFactory.goToStep("identificationWord");
+			}
+			else {
+				ScrollFactory.showStep("insurance");
+				ScrollFactory.goToStep("insurance");
+			}
+			return true;
+		}
+		else {
+			$scope.showAddressModal = true;
+			$scope.submittedModal = true;
+			angular.forEach($scope.WestJet.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+			});
+		}
+  }
+
+  $scope.prevStep = function () {
+    ScrollFactory.showStep("financialSituation");
+    ScrollFactory.goToStep("financialSituation");
+  }
+ }
+
+angular
+  .module('cardApp')
+  .controller('britishAirwaysCtrl', britishAirwaysCtrl);
+
+
+  function britishAirwaysCtrl($scope, $rootScope, ScrollFactory, DataFactory) {
+
+		$scope.data = {};
+		$scope.data.membershipNum = DataFactory.appData.applicant.membershipNum;
+    $scope.content = DataFactory.appData.content;
+    $scope.localContent = DataFactory.appData.content.british_airway;
+
+		$rootScope.britishAirwaysNextStep = function () {
+			if ($scope.BritishAirways.$valid) {
+				DataFactory.setData($scope.data);
+				
+				if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+					ScrollFactory.showStep("identificationWord");
+					ScrollFactory.goToStep("identificationWord");
+				}
+				else {
+					ScrollFactory.showStep("insurance");
+					ScrollFactory.goToStep("insurance");
+				}
+				return true;
+			}
+			else {
+				angular.forEach($scope.BritishAirways.$error, function (field) {
+					angular.forEach(field, function (errorField) {
+						errorField.$setTouched();
+						$rootScope.ga.validationErr(errorField.$name);						
+					})
+				});
+			}
+    }
+
+    $scope.prevStep = function () {
+      ScrollFactory.showStep("westJet");
+      ScrollFactory.goToStep("westJet");
+    }
+  }
+
+angular
+  .module('cardApp')
+  .controller('asiaMilesCtrl', asiaMilesCtrl);
+
+
+  function asiaMilesCtrl($scope, ScrollFactory, DataFactory, $rootScope) {
+
+		$scope.data = {};
+		$scope.data.membershipNum = DataFactory.appData.applicant.membershipNum;
+    $scope.content = DataFactory.appData.content;
+    $scope.localContent = DataFactory.appData.content.cathay_pacific;
+
+		$rootScope.asiaMilesNextStep = function () {
+			if ($scope.AsiaMiles.$valid) {
+				DataFactory.setData($scope.data);
+				if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+					ScrollFactory.showStep("identificationWord");
+					ScrollFactory.goToStep("identificationWord");
+				}
+				else {
+					ScrollFactory.showStep("insurance");
+					ScrollFactory.goToStep("insurance");
+				}
+				return true;
+			}
+			else {
+				angular.forEach($scope.AsiaMiles.$error, function (field) {
+					angular.forEach(field, function (errorField) {
+						errorField.$setTouched();
+						$rootScope.ga.validationErr(errorField.$name);						
+					})
+				});
+			}
+    }
+
+    $scope.prevStep = function () {
+      ScrollFactory.showStep("britishAirways");
+      ScrollFactory.goToStep("britishAirways");
+    }
+  }
+
+angular
+  .module('cardApp')
+  .controller('insuranceCtrl', insuranceCtrl);
+
+
+function insuranceCtrl($scope, $rootScope, $state, ScrollFactory, DataFactory, $timeout, $window) {
+
+    $rootScope.progressCurrent = 9;
+    $rootScope.progressMobCurrent = 9;
+    $scope.localContent = DataFactory.appData.content.insurance;
+    $scope.benefitsTable = DataFactory.appData.content.insurance.benefits_table;
+    //console.log($scope.benefitsTable);
+
+    if (DataFactory.appData.applicant.bpConsent == undefined) $scope.bpConsent = "notset";
+    else if (DataFactory.appData.applicant.bpConsent) $scope.bpConsent = "yes";
+    else $scope.bpConsent = "no";
+
+	$scope.scrollTo = function () {
+		if ($('.legal-link-expand').hasClass('collapsed')) angular.element('.legal-link-expand').triggerHandler('click');
+
+
+
+            if ($window.innerWidth > 768) {
+                $('.disclaimer').velocity("scroll", {
+                    container: $('.container-right'),
+                    duration: 150,
+                    easing: "easeOutQuad"
+                });
+            }
+            else {
+                $timeout(function () {
+                    $('html, body').scrollTop($(document).height());
+                }, 300);
+            }
+
+
+
+	}
+
+	$scope.nextStep = function (answer) {
+		DataFactory.appData.applicant.appState.insurance = true;
+		if (answer === "yes") {
+            DataFactory.setData({ "bpConsent": true });
+            $scope.bpConsent = "yes";
+		}
+		else {
+            DataFactory.setData({ "bpConsent": false });
+            $scope.bpConsent = "no";
+		}
+		ScrollFactory.showStep("identificationWord");
+		ScrollFactory.goToStep("identificationWord");
+  }
+
+  $scope.prevStep = function () {
+		ScrollFactory.showStep(ScrollFactory.stepNoToName(ScrollFactory.stepNameToNo("insurance") - 1));
+		ScrollFactory.goToStep(ScrollFactory.stepNoToName(ScrollFactory.stepNameToNo("insurance") - 1));
+  }
+}
+
+angular
+  .module('cardApp')
+  .controller('identificationWordCtrl', identificationWordCtrl);
+
+
+function identificationWordCtrl($scope, $rootScope, $state, $timeout, ScrollFactory, DataFactory) {
+
+	$rootScope.progressCurrent = 10;
+	$rootScope.progressMobCurrent = 10;
+
+  $scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.identification_word;
+
+	$scope.data = {};
+	$scope.data.verificationWord = DataFactory.appData.applicant.verificationWord;
+
+	$rootScope.identificationWordNextStep = function () {
+		if ($scope.IdentificationWord.$valid) {
+			DataFactory.setData($scope.data);
+
+			//if ($rootScope.edit && !$rootScope.validatingAllSteps && $rootScope.validateAllSteps()) {
+			//	$rootScope.currentStep = "review";
+			//	$timeout(function () { $state.go("review") });
+			//}
+			//else {
+			//	ScrollFactory.showStep("authUser");
+			//	ScrollFactory.goToStep("authUser");
+			//	return true;
+			//}
+			ScrollFactory.showStep("authUser");
+			ScrollFactory.goToStep("authUser");
+			return true;
+		}
+		else {
+			angular.forEach($scope.IdentificationWord.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+			});
+		}
+  }
+
+	$scope.prevStep = function () {
+		var stepToGo = "insurance";
+		if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+			stepToGo = "financialSituation";
+		}
+		ScrollFactory.showStep(stepToGo);
+		ScrollFactory.goToStep(stepToGo);
+  }
+}
+
+angular
+  .module('cardApp')
+  .controller('authUserCtrl', authUserCtrl);
+
+
+function authUserCtrl($scope, $rootScope, $timeout, ScrollFactory, DataFactory, $state) {
+
+	$rootScope.progressCurrent = 11;
+	$rootScope.progressMobCurrent = 11;
+  $scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.auth_user;
+	if (DataFactory.appData.applicant.additionalCardholderExist && $rootScope.edit) {
+		ScrollFactory.showStep("authUserDetails");
+		ScrollFactory.showStep("authUserDetails2");
+  }
+	if (!DataFactory.appData.applicant.additionalCardholderExist && !$rootScope.edit && !$rootScope.reviewBack) $scope.authUser = "notset";
+	else if (DataFactory.appData.applicant.additionalCardholderExist) $scope.authUser = "yes";
+	else $scope.authUser = "no";
+
+	$scope.nextStep = function (answer) {
+		DataFactory.appData.applicant.appState.authUser = true;
+		if (answer) $scope.authUser = answer;
+		if (answer === "yes" || $scope.authUser === "yes") {
+			DataFactory.setData({ "additionalCardholderExist": true });
+			$scope.authUser = "yes";
+
+			ScrollFactory.showStep("authUserDetails");
+			ScrollFactory.goToStep("authUserDetails");
+		}
+		else {
+				ScrollFactory.hideStep("authUserAddress");
+				ScrollFactory.hideStep("authUserAddress2");
+				ScrollFactory.hideStep("authUserDetails");
+				ScrollFactory.hideStep("authUserBirthdayMonth");
+				ScrollFactory.hideStep("authUserBirthdayDay");
+				ScrollFactory.hideStep("authUserBirthdayYear");
+				ScrollFactory.hideStep("authUserDetails2");
+        DataFactory.setData({ "additionalCardholderExist": false });
+				$scope.authUser = "no";
+			if (!$rootScope.validatingAllSteps && $rootScope.validateAllSteps()) {
+					$rootScope.appCompleted = true;
+					$rootScope.currentStep = "review";
+					$timeout(function () { $state.go("review") });
+				}
+		}
+	}
+
+	$scope.prevStep = function () {
+		ScrollFactory.showStep("identificationWord");
+		ScrollFactory.goToStep("identificationWord");
+	}
+}
+
+angular
+	.module('cardApp')
+	.controller('authUserAddressCtrl', authUserAddressCtrl);
+
+
+function authUserAddressCtrl($scope, $rootScope, $state, $timeout, $filter, ScrollFactory, DataFactory) {
+
+	$rootScope.progressCurrent = 11;
+	$rootScope.progressMobCurrent = 11;
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.auth_user_address;
+
+	$scope.$watch(function () { return DataFactory.appData.applicant.authUser.authUserInfo.firstName }, function (newVal) {
+		if (newVal) $scope.authFirstName = $filter('capitalizefirst')(DataFactory.appData.applicant.authUser.authUserInfo.firstName);
+	})
+
+	if (DataFactory.appData.applicant.authUser.isSameAddress && $rootScope.edit) {
+		ScrollFactory.showStep("authUserAddress2");
+	}
+	if (!DataFactory.appData.applicant.authUser.isSameAddress && !$rootScope.edit && !$rootScope.reviewBack) $scope.sameAddress = "notset";
+	else if (DataFactory.appData.applicant.authUser.isSameAddress) $scope.sameAddress = "yes";
+	else $scope.sameAddress = "no";
+
+	$scope.nextStep = function (answer) {
+		DataFactory.appData.applicant.appState.authUserAddress = true;
+		if (answer) $scope.sameAddress = answer;
+		if (answer === "yes" || $scope.sameAddress === "yes") {
+			$scope.sameAddress = "yes";
+			var userCurrentAddress = angular.copy(DataFactory.appData.applicant.userCurrentAddress);
+			DataFactory.setData({ "authUser": { "isSameAddress": true, "authUserAddress": userCurrentAddress } });
+			$scope.sameAddress = "yes";
+			//ScrollFactory.showStep("authUserAddress2");
+			//ScrollFactory.goToStep("authUserAddress2");
+			ScrollFactory.hideStep("authUserAddress2");
+			if (!$rootScope.validatingAllSteps && $rootScope.validateAllSteps()) {
+				$rootScope.appCompleted = true;
+				$rootScope.currentStep = "review";
+				$timeout(function () { $state.go("review") });
+			}
+		}
+		else {
+			$scope.sameAddress = "no";
+			var userCurrentAddress = angular.copy(DataFactory.appData.applicant.userCurrentAddress);
+			var authCurrentAddress = angular.copy(DataFactory.appData.applicant.authUser.authUserAddress);
+			if (JSON.stringify(userCurrentAddress) === JSON.stringify(authCurrentAddress)) {
+				authCurrentAddress = {
+					addressSince: "",
+					aptNum: null,
+					city: "",
+					housingType: "",
+					postalCode:"",
+					province:"",
+					streetName:"",
+					streetNum: "",
+				}
+			}
+			DataFactory.setData({ "authUser": { "isSameAddress": false, "authUserAddress": authCurrentAddress } });
+			$scope.sameAddress = "no";
+			ScrollFactory.showStep("authUserAddress2");
+			ScrollFactory.goToStep("authUserAddress2");
+		}
+	}
+
+	$scope.prevStep = function () {
+		ScrollFactory.showStep("authUserDetails2");
+		ScrollFactory.goToStep("authUserDetails2");
+	}
+}
+
+angular
+	.module('cardApp')
+	.controller('authUserAddress2Ctrl', authUserAddress2Ctrl);
+
+
+function authUserAddress2Ctrl($scope, $rootScope, $state, $timeout, $filter, ScrollFactory, DataFactory) {
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.auth_user_address_2;
+	$scope.addressContent = DataFactory.appData.content.address;
+
+	$scope.data = {};
+	$scope.data.authUser = DataFactory.appData.applicant.authUser;
+	$scope.data.authUser.authUserInfo = DataFactory.appData.applicant.authUser.authUserInfo;
+	$scope.data.authUser.authUserAddress = DataFactory.appData.applicant.authUser.authUserAddress;
+
+	if ($(window).width() <= 768) {
+		$scope.addressPlaceholder = "";
+	}
+	else {
+        $scope.addressPlaceholder = $scope.localContent.address_placeholder;
+	}
+    $(window).on('resize', function () {
+        if ($(window).width() <= 768) {
+            $scope.addressPlaceholder = "";
+            $scope.$apply();
+        }
+        else {
+            $scope.addressPlaceholder = $scope.localContent.address_placeholder;
+            $scope.$apply();
+        }
+    });
+
+    $scope.$watch(function () { return DataFactory.appData.applicant.authUser.authUserAddress.streetName }, function (newVal, oldVal) {
+        $scope.data.authUser.authUserAddress = DataFactory.appData.applicant.authUser.authUserAddress;
+        if (newVal && newVal !== oldVal)
+            $timeout(function () { addressModalDone(); });
+    });
+
+
+    $scope.$watch(function () { return DataFactory.appData.applicant.authUser.authUserInfo.firstName }, function (newVal) {
+        if (newVal) $scope.authFirstName = $filter('capitalizefirst')(DataFactory.appData.applicant.authUser.authUserInfo.firstName);
+    });
+
+	$scope.$watch('addressModalForm', function (form) {
+		if (form && $scope.addressModalForm.$valid && DataFactory.appData.applicant.authUser && DataFactory.appData.applicant.authUser.authUserAddress.streetName) addressModalDone();
+	});
+
+	$scope.checkProvince = checkProvince;
+    $scope.checkAddress = checkAddress;
+	$scope.addressModalDone = addressModalDone;
+	$scope.isValidAddress = isValidAddress;
+	$scope.displayModalErrors = displayModalErrors;
+	$scope.addressType = "auth";
+    $scope.provinceArray = Object.keys($scope.content.province).map(function (key) {
+        return { key: key, value: $scope.content.province[key] };
+    });
+	
+	function addressModalDone() {
+		$scope.submittedModal = true;
+		if ($scope.addressModalForm.$valid) {
+			$scope.showAddressModal = false;
+			if ($scope.data.authUser.authUserAddress.streetNum) {
+				$scope.auAddress = $scope.data.authUser.authUserAddress.streetNum + " " +
+					$scope.data.authUser.authUserAddress.streetName + ", " +
+					$scope.data.authUser.authUserAddress.city + ", " +
+					$scope.data.authUser.authUserAddress.province + ", Canada";
+			}
+			else {
+				$scope.auAddress = $scope.data.authUser.authUserAddress.streetName + ", " + $scope.data.authUser.authUserAddress.city + ", " + $scope.data.authUser.authUserAddress.province + ", Canada";
+			}
+		} else {
+            $scope.auAddress = "";
+			angular.forEach($scope.addressModalForm.$error, function (field) {
+                angular.forEach(field, function (errorField) {
+                    $rootScope.ga.validationErr(errorField.$name);
+                });
+			});
+		}
+    }
+
+    function checkAddress(form, fieldName) {
+        var boxFrRegex = /s\.o\./i;
+
+        var invalidPOValues = [
+            'box\\s+\\d+\\w*', 'General\\s+Delivery', '\\s*GD\\s*',  //en
+            'BOITE\\s+\\d+\\w*', 'BOÎTE\\s+\\d+\\w*', 'Poste\\s+restante', '\\s*PR\\s*'//fr
+        ];
+
+        var invalidOtherValues = [
+            'Royal\\s+Bank\\s+of\\s+Canada', 'RBC', 'N/A', 'Banque\\s+Royale\\s+du\\s+Canada'
+        ];
+
+        var invalidPORegex = new RegExp(['(.*?(\\b', invalidPOValues.join('\\b|\\b'), '\\b)[^$]*)$'].join(''), 'i');
+
+		var invalidOtherRegex = new RegExp(['(.*?(^(\\s)*NA(\\s)*$|\\b', invalidOtherValues.join('\\b|\\b'), '\\b)[^$]*)$'].join(''), 'i');
+
+        var field = $scope[form][fieldName];
+        var otherField = fieldName === "auStreetNum" ? $scope[form]["auStreetName"] : $scope[form]["auStreetNum"];
+        var value = field.$viewValue;
+        var otherValue = otherField.$viewValue;
+        if ((fieldName === "auStreetNum" && otherValue !== "" && invalidPORegex.test(value + " " + otherValue)) || (fieldName === "auStreetName" && otherValue !== "" && invalidPORegex.test(otherValue + " " + value))) {
+            field.$setValidity('pobox', false);
+            $scope.poboxError = true;
+            $scope.poboxErrorNum = true;
+            $scope.poboxErrorName = true;
+        }
+        else if (invalidPORegex.test(value)) {
+            field.$setValidity('pobox', false);
+            $scope.poboxError = true;
+            if (fieldName === "auStreetNum") {
+                $scope.poboxErrorNum = true;
+            }
+            else if (fieldName === "auStreetName") {
+                $scope.poboxErrorName = true;
+            }
+        }
+        else if (invalidOtherRegex.test(value) || boxFrRegex.test(value)) {
+            field.$setValidity('pobox', false);
+            $scope.addressError = true;
+            if (fieldName === "auStreetNum") {
+                $scope.addressErrorNum = false;
+            }
+            else if (fieldName === "auStreetName") {
+                $scope.addressErrorName = true;
+            }
+        }
+        else {
+            field.$setValidity('pobox', true);
+            $scope.poboxError = false;
+            if (fieldName === "auStreetNum") {
+                $scope.poboxErrorNum = false;
+            }
+            else if (fieldName === "auStreetName") {
+                $scope.poboxErrorName = false;
+            }
+        }
+
+    }
+
+	function checkProvince() {
+		var isValid = false;
+		var value = $scope.addressModalForm.auPostalCode.$viewValue;
+		var field = $scope.addressModalForm.auPostalCode;
+
+		if (!String.prototype.startsWith) {
+			String.prototype.startsWith = function (searchString, position) {
+				position = position || 0;
+				return this.indexOf(searchString, position) === position;
+			};
+		}
+
+		if (value) {
+			switch ($scope.addressModalForm.auProvince.$viewValue) {
+				case "AB":
+					if (value.toUpperCase().startsWith("T")) isValid = true;
+					break;
+				case "BC":
+					if (value.toUpperCase().startsWith("V")) isValid = true;
+					break;
+				case "MB":
+					if (value.toUpperCase().startsWith("R")) isValid = true;
+					break;
+				case "NB":
+					if (value.toUpperCase().startsWith("E")) isValid = true;
+					break;
+				case "NL":
+					if (value.toUpperCase().startsWith("A")) isValid = true;
+					break;
+				case "NS":
+					if (value.toUpperCase().startsWith("B")) isValid = true;
+					break;
+				case "NT":
+					if (value.toUpperCase().startsWith("X")) isValid = true;
+					break;
+				case "NU":
+					if (value.toUpperCase().startsWith("X")) isValid = true;
+					break;
+				case "ON":
+					if (value.toUpperCase().startsWith("K") ||
+						value.toUpperCase().startsWith("L") ||
+						value.toUpperCase().startsWith("M") ||
+						value.toUpperCase().startsWith("N") ||
+						value.toUpperCase().startsWith("P")) isValid = true;
+					break;
+				case "PE":
+					if (value.toUpperCase().startsWith("C")) isValid = true;
+					break;
+				case "QC":
+					if (value.toUpperCase().startsWith("G") ||
+						value.toUpperCase().startsWith("H") ||
+						value.toUpperCase().startsWith("J")) isValid = true;
+					break;
+				case "SK":
+					if (value.toUpperCase().startsWith("S")) isValid = true;
+					break;
+				case "YT":
+					if (value.toUpperCase().startsWith("Y")) isValid = true;
+					break;
+				default:
+					break;
+			}
+			//test pattern
+			var regex = /^[A-Za-z]\d[A-Za-z][ ]?\d[A-Za-z]\d$/;
+
+			if (!value.match(regex)) isValid = false;
+
+			isValid ? field.$setValidity('', true) : field.$setValidity('', false);
+		}
+	}
+
+	function isValidAddress() {
+		return $scope.addressModalForm.$valid && $scope.AuthUserAddress.$valid;
+	}
+
+	function displayModalErrors() {
+		if (!$scope.addressModalForm.$valid) {
+			$scope.showAddressModal = true;
+			$scope.submittedModal = true;
+		}
+		angular.forEach($scope.AuthUserAddress.$error, function (field) {
+			angular.forEach(field, function (errorField) {
+				errorField.$setTouched();
+				$rootScope.ga.validationErr(errorField.$name);
+			});
+		});
+	}
+
+    $rootScope.authUserAddress2NextStep = function () {
+		if (isValidAddress()) {
+            var data = angular.copy($scope.data);
+            DataFactory.setData(data);
+            if (!$rootScope.validatingAllSteps && $rootScope.validateAllSteps()) {
+                $rootScope.appCompleted = true;
+                $rootScope.currentStep = "review";
+                $timeout(function () { $state.go("review") });
+            }
+            return true;
+        }
+        else {
+			displayModalErrors();
+        }
+    };
+
+    $scope.prevStep = function () {
+        ScrollFactory.showStep("authUserAddress");
+        ScrollFactory.goToStep("authUserAddress");
+    };
+}
+
+angular
+  .module('cardApp')
+  .controller('authUserDetailsCtrl', authUserDetailsCtrl);
+
+
+function authUserDetailsCtrl($scope, $rootScope, ScrollFactory, DataFactory) {
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.auth_user_details;
+
+	$scope.data = {};
+	$scope.data.authUser = DataFactory.appData.applicant.authUser;
+
+	$scope.titleArray = Object.keys($scope.content.title).map(function (key) {
+		return { key: key, value: $scope.content.title[key] };
+	})
+
+	$rootScope.authUserDetailsNextStep = function () {
+		if ($scope.AuthUserDetails.$valid) {
+			DataFactory.setData($scope.data);
+			ScrollFactory.showStep("authUserBirthdayMonth");
+			ScrollFactory.goToStep("authUserBirthdayMonth");
+			return true;
+		}
+		else {
+			angular.forEach($scope.AuthUserDetails.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+			});
+		}
+  }
+
+	$scope.prevStep = function () {
+		ScrollFactory.showStep("authUser");
+		ScrollFactory.goToStep("authUser");
+		//if (DataFactory.appData.applicant.authUser.isSameAddress) {
+		//	ScrollFactory.showStep("authUserAddress");
+		//	ScrollFactory.goToStep("authUserAddress");
+		//}
+		//else {
+		//	ScrollFactory.showStep("authUserAddress2");
+		//	ScrollFactory.goToStep("authUserAddress2");
+		//}
+  }
+}
+
+angular
+	.module('cardApp')
+	.controller('authUserBirthdayMonthCtrl', authUserBirthdayMonthCtrl);
+
+
+function authUserBirthdayMonthCtrl($scope, $rootScope, $timeout, $filter, DataFactory, ScrollFactory) {
+
+	$scope.localContent = DataFactory.appData.content['auth_user_birthday'];
+	$scope.birthdayContent = DataFactory.appData.content['birthday'];
+	$scope.content = DataFactory.appData.content;
+
+	$scope.selectedMonth = DataFactory.appData.application.auBirthDateMM || $.trim(DataFactory.appData.applicant.authUser.authUserInfo.birthDay).substr(5, 2) || "";
+	$rootScope.continueDisabled = $scope.selectedMonth === "" ? true : false;
+
+	$scope.$watch(function () {
+		return DataFactory.appData.application.auBirthDateMM
+	}, function (newValue, oldValue) {
+		if (newValue) {
+			$scope.selectedMonth = newValue;
+		}
+	})
+
+	$rootScope.$watch('currentStep', function (newVal) {
+		if (newVal && newVal === "authUserBirthdayMonth" && $scope.selectedMonth) {
+			$rootScope.continueDisabled = false;
+		}
+	})
+
+	$scope.$watch(function () { return DataFactory.appData.applicant.authUser.authUserInfo.firstName }, function (newVal) {
+		if (newVal) $scope.authFirstName = $filter('capitalizefirst')(DataFactory.appData.applicant.authUser.authUserInfo.firstName);
+	})
+	
+	$scope.months = DataFactory.appData.content["month_list"];
+	$scope.monthsFull = DataFactory.appData.content["month_list_full"];
+	$scope.monthsArray = [];
+	Object.keys($scope.months).map(function (key) {
+		var value = $scope.months[key];
+		$scope.monthsArray.push({ key: key, value: value });
+	});
+
+	$scope.nextStep = function (month) {
+		DataFactory.appData.applicant.appState.authUserBirthdayMonth = true;
+		DataFactory.appData.application.auBirthDateMM = month;
+		ScrollFactory.showStep("authUserBirthdayDay");
+		ScrollFactory.goToStep("authUserBirthdayDay");
+	}
+
+	$rootScope.authUserBirthdayMonthNextStep = function () {
+		DataFactory.appData.application.auBirthDateMM = $scope.selectedMonth;
+		ScrollFactory.showStep("authUserBirthdayDay");
+		ScrollFactory.goToStep("authUserBirthdayDay");
+		return true;
+	}
+
+	$scope.prevStep = function () {
+		ScrollFactory.showStep("authUserDetails");
+		ScrollFactory.goToStep("authUserDetails");
+	}
+
+}
+
+angular
+	.module('cardApp')
+	.controller('authUserBirthdayDayCtrl', authUserBirthdayDayCtrl);
+
+
+function authUserBirthdayDayCtrl($scope, $rootScope, $timeout, $filter, DataFactory, ScrollFactory) {
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.auth_user_birthday;
+	$scope.birthdayContent = DataFactory.appData.content.birthday;
+	$scope.goToStep = ScrollFactory.goToStep;
+
+	$scope.selectedDay = DataFactory.appData.application.auBirthDateDD || $.trim(DataFactory.appData.applicant.authUser.authUserInfo.birthDay).substr(8, 2) || "";
+	$rootScope.continueDisabled = $scope.selectedDay === "" ? true : false;
+
+	$scope.$watch(function () { return DataFactory.appData.applicant.authUser.authUserInfo.firstName }, function (newVal) {
+		if (newVal) $scope.authFirstName = $filter('capitalizefirst')(DataFactory.appData.applicant.authUser.authUserInfo.firstName);
+	})
+
+	$scope.$watch(function () {
+		return DataFactory.appData.application.auBirthDateDD
+	}, function (newValue, oldValue) {
+		if (newValue) {
+			$scope.selectedDay = newValue;
+		}
+	});
+
+	$rootScope.$watch('currentStep', function (newVal) {
+		if (newVal && newVal === "authUserBirthdayDay" && $scope.selectedDay) {
+			$rootScope.continueDisabled = false;
+		}
+	})
+
+	$scope.$watch(function () {
+		return DataFactory.appData.application.auBirthDateMM;
+	}, function (newValue, oldValue) {
+		if (newValue) $scope.birthMonth = $scope.content.month_list_full[DataFactory.appData.application.auBirthDateMM];
+	})
+
+	$scope.birthMonth = $scope.content.month_list_full[DataFactory.appData.application.auBirthDateMM];
+
+	$scope.$watch(function () {
+		return DataFactory.appData.application.auBirthDateMM
+	}, function (newVal, oldVal) {
+		if (newVal.match("01|03|05|07|08|10|12")) {
+			$scope.daysLength = 31;
+		}
+		else if (newVal.match("02")) {
+			$scope.daysLength = 29;
+		}
+		else $scope.daysLength = 30;
+	})
+
+
+	$scope.nextStep = function (day) {
+		DataFactory.appData.applicant.appState.authUserBirthdayDay = true;
+		DataFactory.appData.application.auBirthDateDD = day;
+		ScrollFactory.showStep("authUserBirthdayYear");
+		ScrollFactory.goToStep("authUserBirthdayYear");
+	}
+
+	$rootScope.authUserBirthdayDayNextStep = function () {
+		DataFactory.appData.application.auBirthDateDD = $scope.selectedDay;
+		ScrollFactory.showStep("authUserBirthdayYear");
+		ScrollFactory.goToStep("authUserBirthdayYear");
+		return true;
+	}
+
+	$scope.prevStep = function () {
+		ScrollFactory.showStep("authUserBirthdayMonth");
+		ScrollFactory.goToStep("authUserBirthdayMonth");
+	}
+}
+
+angular
+	.module('cardApp')
+	.controller('authUserBirthdayYearCtrl', authUserBirthdayYearCtrl);
+
+
+function authUserBirthdayYearCtrl($scope, $rootScope, $filter, DataFactory, ScrollFactory) {
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.auth_user_birthday;
+	$scope.birthdayContent = DataFactory.appData.content.birthday;
+	$scope.data = {};
+	$scope.data.authUser = {};
+	$scope.data.authUser.authUserInfo = {};
+	$scope.goToStep = ScrollFactory.goToStep;
+
+	$scope.birthMM = DataFactory.appData.application.auBirthDateMM;
+	$scope.birthMonth = $scope.content.month_list_full[$scope.birthMM];
+	$scope.birthDay = DataFactory.appData.application.auBirthDateDD;
+	$scope.$watch(function () {
+		return DataFactory.appData.application.auBirthDateMM
+	}, function (newVal) {
+		if (newVal) {
+			$scope.birthMM = newVal;
+			$scope.birthMonth = $scope.content.month_list_full[newVal];
+
+			$scope.data.authUser.authUserInfo.birthDay = DataFactory.appData.application.auBirthDateYYYY + '-' + ("00" + DataFactory.appData.application.auBirthDateMM).slice(-2) + '-' + ("00" + DataFactory.appData.application.auBirthDateDD).slice(-2);
+			if ($scope.data.authUser.authUserInfo.birthDay.length > 9) {
+				$rootScope.auAge = calculateAge($scope.data.authUser.authUserInfo.birthDay);
+			}
+		}
+		})
+
+	$scope.$watch(function () {
+		return DataFactory.appData.application.auBirthDateDD
+	}, function (newVal) {
+		if (newVal) {
+			$scope.birthDay = newVal;
+
+			$scope.data.authUser.authUserInfo.birthDay = DataFactory.appData.application.auBirthDateYYYY + '-' + ("00" + DataFactory.appData.application.auBirthDateMM).slice(-2) + '-' + ("00" + DataFactory.appData.application.auBirthDateDD).slice(-2);
+			if ($scope.data.authUser.authUserInfo.birthDay.length > 9) {
+				$rootScope.auAge = calculateAge($scope.data.authUser.authUserInfo.birthDay);
+			}
+		}
+
+	})
+
+	$scope.$watch(function () { return DataFactory.appData.applicant.authUser.authUserInfo.firstName }, function (newVal) {
+		if (newVal) $scope.authFirstName = $filter('capitalizefirst')(DataFactory.appData.applicant.authUser.authUserInfo.firstName);
+	})
+
+	$rootScope.auAge = calculateAge($scope.data.authUser.authUserInfo.birthDay);
+
+	$scope.selectedYear = DataFactory.appData.application.auBirthDateYYYY || Number($.trim(DataFactory.appData.applicant.authUser.authUserInfo.birthDay).substr(0, 4)) || "";
+	$rootScope.continueDisabled = $scope.selectedYear === "" ? true : false;
+	$scope.$watch(function () {
+		return DataFactory.appData.application.auBirthDateYYYY
+	}, function (newValue, oldValue) {
+		if (newValue) $scope.selectedYear = newValue;
+	})
+
+	$rootScope.$watch('currentStep', function (newVal) {
+		if (newVal && newVal === "authUserBirthdayYear" && $scope.selectedYear) {
+			$rootScope.continueDisabled = false;
+		}
+	})
+
+	$scope.yearPrefix = ["190", "191", "192", "193", "194", "195", "196", "197", "198", "199", "200", "201"];
+	$scope.currentDecadeIndex = 8;
+
+	$scope.nextStep = function (year) {
+		DataFactory.appData.applicant.appState.authUserBirthdayYear = true;
+		DataFactory.appData.application.auBirthDateYYYY = year;
+		$scope.data.authUser.authUserInfo.birthDay = DataFactory.appData.application.auBirthDateYYYY + '-' + ("00" + DataFactory.appData.application.auBirthDateMM).slice(-2) + '-' + ("00" + DataFactory.appData.application.auBirthDateDD).slice(-2);
+		$rootScope.auAge = calculateAge($scope.data.authUser.authUserInfo.birthDay);
+		DataFactory.setData($scope.data);
+		ScrollFactory.showStep("authUserDetails2");
+		ScrollFactory.goToStep("authUserDetails2");
+	}
+
+	$rootScope.authUserBirthdayYearNextStep = function () {
+		DataFactory.appData.application.auBirthDateYYYY = $scope.selectedYear;
+		$scope.data.authUser.authUserInfo.birthDay = DataFactory.appData.application.auBirthDateYYYY + '-' + ("00" + DataFactory.appData.application.auBirthDateMM).slice(-2) + '-' + ("00" + DataFactory.appData.application.auBirthDateDD).slice(-2);
+		$rootScope.auAge = calculateAge($scope.data.authUser.authUserInfo.birthDay);
+		DataFactory.setData($scope.data);
+		ScrollFactory.showStep("authUserDetails2");
+		ScrollFactory.goToStep("authUserDetails2");
+		return true;
+	}
+
+	$scope.prevStep = function () {
+		ScrollFactory.showStep("authUserBirthdayDay");
+		ScrollFactory.goToStep("authUserBirthdayDay");
+	}
+
+	$scope.prevYear = function () {
+		if ($scope.prevYearEnabled()) {
+			$scope.currentDecadeIndex--;
+		}
+	}
+
+	$scope.prevYearEnabled = function() {
+		var minDecade = (new Date().getFullYear() - 100).toString().substr(2, 1);
+		return $scope.currentDecadeIndex > minDecade;
+	}
+
+	$scope.nextYear = function () {
+		if ($scope.nextYearEnabled()) {
+			$scope.currentDecadeIndex++;
+		}
+	}
+
+	$scope.nextYearEnabled = function () {
+		var maxDecade = 10;
+		var today = new Date();
+		var maxDOBYear = today.getFullYear() - 18;
+		var m = (today.getMonth() + 1) - $scope.birthMM;
+		if ((parseInt($scope.yearPrefix[$scope.currentDecadeIndex + 1] + "0") >= maxDOBYear) && (m < 0 || (m === 0 && $scope.birthDay > today.getDate()))) {
+			return false;
+		}
+		if ($scope.currentDecadeIndex < maxDecade) {
+			return true;
+		}
+	}
+
+	function calculateAge(birthday) {
+		birthday = new Date(birthday);
+		var ageDifMs = Date.now() - birthday.getTime();
+		var ageDate = new Date(ageDifMs); // miliseconds from epoch
+		return Math.abs(ageDate.getUTCFullYear() - 1970);
+	}
+
+	$scope.isYearVisible = function (year) {
+		var today = new Date();
+		var maxDOBYear = today.getFullYear() - 18;
+		var minDOBYear = today.getFullYear() - 100;
+		var year = parseInt(year);
+		var m = (today.getMonth() + 1) - $scope.birthMM;
+		if (((year > minDOBYear) || (year == minDOBYear && (m < 0 || (m === 0 && today.getDate() < $scope.birthDay)))) &&
+			((year < maxDOBYear) || (year == maxDOBYear && (m > 0 || (m === 0 && today.getDate() > $scope.birthDay))))) {
+			if ($scope.birthMM == "02" && $scope.birthDay == "29") {
+				return leapYear(year);
+			}
+			else return true;
+		}
+		return false;
+	}
+
+	function leapYear(year) {
+		var result;
+		year = parseInt(year);
+		return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+	}
+
+}
+
+angular
+  .module('cardApp')
+  .controller('authUserDetails2Ctrl', authUserDetails2Ctrl);
+
+
+function authUserDetails2Ctrl($scope, $rootScope, $timeout, $state, $filter, ScrollFactory, DataFactory) {
+
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.auth_user_details_2;
+
+	$scope.data = {};
+	$scope.data.authUser = DataFactory.appData.applicant.authUser;
+	$scope.data.authUser.authUserInfo = DataFactory.appData.applicant.authUser.authUserInfo;
+
+	if ($scope.data.authUser.authUserInfo.homePhone && $scope.data.authUser.authUserInfo.homePhone.substr(7, 1) !== "-") $timeout(function () { angular.element('#auAuthUserPhoneNumber').triggerHandler('keyup') });
+	$scope.$watch('data.authUser.authUserInfo.homePhone', function (newVal, oldVal) {
+		if (newVal) $timeout(function () { angular.element('#auAuthUserPhoneNumber').triggerHandler('change'); });
+	})
+
+	$scope.authFirstName = $filter('capitalizefirst')(DataFactory.appData.applicant.authUser.authUserInfo.firstName);
+	$scope.$watch(function () { return DataFactory.appData.applicant.authUser.authUserInfo.firstName }, function (newVal, oldVal) {
+		if (newVal && newVal !== oldVal) $scope.authFirstName = DataFactory.appData.applicant.authUser.authUserInfo.firstName;
+	})
+
+	$scope.luhnCheck = luhnCheck;
+
+	$scope.relationshipArray = Object.keys($scope.content.relationship).map(function (key) {
+		return { key: key, value: $scope.content.relationship[key] };
+	})
+
+	function luhnCheck(num) {
+		if (!num.$viewValue) {
+			num.$setValidity('', true);
+			return;
+		}
+		if (num.$viewValue.length !== 12) {
+			num.$setValidity('', false);
+			return;
+		}
+		var number = "4519" + num.$viewValue;
+		var re = /^(\d{16})?$/
+		var len = number.length,
+			mul = 0,
+			prodArr = [
+				[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				[0, 2, 4, 6, 8, 1, 3, 5, 7, 9]
+			],
+			sum = 0;
+
+		while (len--) {
+			sum += prodArr[mul][parseInt(number.charAt(len), 10)];
+			mul ^= 1;
+		}
+
+		var valid = sum % 10 === 0 && sum > 0;
+		if (number.length === 16 && re.test(number)) {
+			if (!valid)
+				num.$setValidity('', false)
+			else
+				num.$setValidity('', true)
+		}
+	};
+
+	$rootScope.authUserDetails2NextStep = function () {
+		if ($scope.AuthUserDetails2.$valid) {
+			var data = angular.copy($scope.data);
+			data.authUser.authUserInfo.homePhone = data.authUser.authUserInfo.homePhone.replace(/\D/g, '').replace(/(\d{3})(\d{7})/, "$1-$2");
+			DataFactory.setData(data);
+			ScrollFactory.showStep('authUserAddress')
+			ScrollFactory.goToStep('authUserAddress')
+			return true;
+		}
+		else {
+			angular.forEach($scope.AuthUserDetails2.$error, function (field) {
+				angular.forEach(field, function (errorField) {
+					errorField.$setTouched();
+					$rootScope.ga.validationErr(errorField.$name);					
+				})
+			});
+		}
+	}
+
+  $scope.prevStep = function () {
+    ScrollFactory.showStep("authUserBirthdayYear");
+		ScrollFactory.goToStep("authUserBirthdayYear");
+  }
+}
+
+angular
+	.module('cardApp')
+	.controller('reviewCtrl', reviewCtrl);
+
+
+function reviewCtrl($scope, $rootScope, $q, $state, $timeout, ScrollFactory, $http, DataFactory, SessionFactory, SubmitFactory, ProductFactory, ErrorFactory) {
+	if (!$rootScope.appCompleted) {
+		//console.log('not loaded');
+		$rootScope.currentStep = 'intro';
+		$state.go('main', { 'hash': 'intro' });
+	}
+	$rootScope.progressCurrent = $rootScope.progressSteps;
+	$rootScope.progressMobCurrent = $rootScope.progressMobSteps;
+	$rootScope.currentStep = "review";
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.review;
+	$rootScope.cardDetails = DataFactory.appData.content.result.card_details;
+
+	$scope.baseUrl = baseUrl;
+
+	$scope.hideBP = ($rootScope.age >= 65 || incoming_pcode === "gold_us");
+
+	if (sff && $rootScope.product && $rootScope.product.asc === "5BW003")
+			$scope.showEmployeeNum = true;
+
+	$scope.applicant = DataFactory.appData.applicant;
+	$scope.$watch(function () { return DataFactory.appData.application; }, function (newVal, oldVal) {
+		if (newVal && newVal !== oldVal) {
+			$scope.applicant = DataFactory.appData.applicant;
+		}
+	})
+
+	$scope.$watch('$root.showBPAgreementModal', function (newVal) {
+		if (newVal) {
+			function initTable() {
+				if ($(window).width() <= 768) {
+					$('.tablesaw').addClass('tablesaw-stack');
+					$('.tablesaw-cell-label').css('display', 'inline-block');
+					$('.tablesaw').find('thead').hide();
+				}
+				else {
+					$('.tablesaw').removeClass('tablesaw-stack');
+					$('.tablesaw-cell-label').css('display', 'none');
+					$('.tablesaw').find('thead').show();
+				}
+			}
+			$timeout(function () {
+				initTable();
+				Tablesaw.init();
+			}, 100)
+			$(window).on('resize', function () {
+				initTable();
+				Tablesaw.init();
+			})
+		}
+	})
+
+	//skip balance protector when selected "No"
+	if (!$scope.applicant.bpConsent) $scope.bpRead = true;
+	else $scope.bpRead = false;
+
+	$scope.data = {};
+	$scope.userBirthday = $scope.applicant.userInfo.birthDay.toLocaleString($rootScope.lang + "-CA", { year: 'numeric', month: 'short', day: 'numeric' });
+	$scope.livingSince = $scope.applicant.userCurrentAddress.addressSince.toLocaleString($rootScope.lang + "-CA", { year: 'numeric', month: 'short' });
+	$scope.employedSince = $scope.applicant.userOccupation.employedSince ? $scope.applicant.userOccupation.employedSince.toLocaleString($rootScope.lang + "-CA", { year: 'numeric', month: 'short' }) : "";
+	$scope.authUserBirthday = $scope.applicant.authUser.authUserInfo.birthDay ? $scope.applicant.authUser.authUserInfo.birthDay.toLocaleString($rootScope.lang + "-CA", { year: 'numeric', month: 'short', day: 'numeric' }) : "";
+	$scope.occupation = $scope.content.occupation[$scope.applicant.userOccupation.occupationId];
+	if ($scope.applicant.userOccupation.occupationId === "19") $scope.occupation = $rootScope.lang === 'en' ? "Retired" : "Retraité";
+	if ($scope.applicant.userOccupation.occupationId === "27") $scope.occupation = $rootScope.lang === 'en' ? "Unemployed" : "Sans emploi";
+	$scope.housingType = $scope.content.housing_types[$scope.applicant.userCurrentAddress.housingType];
+	$scope.showAuthorizedUser = $scope.applicant.additionalCardholderExist;
+	$scope.showDG = $scope.applicant.userCurrentAddress.province === "QC" && $scope.applicant.bpConsent;
+	$scope.rentMtg = Number($scope.applicant.userExpenses.rentMtgPayment).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" });
+	if ($scope.applicant.userExpenses.condoFees) $scope.condoFees = Number($scope.applicant.userExpenses.condoFees).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" });
+	if (!$scope.showDG) $scope.dgRead = true;
+	else $scope.dgRead = false;
+
+	if ($scope.applicant.previousAddressRequired) {
+		$scope.prevAddress = true;
+		$scope.prevHousingType = $scope.content.housing_types[$scope.applicant.userPrevAddress.housingType];
+	}
+
+
+	//$scope.userPhone = $scope.applicant.userInfo.homePhone;
+	//$scope.userPhone = $scope.userPhone.slice(0, 7) + "-" + $scope.userPhone.slice(7);
+	//if ($scope.applicant.userOccupation.workPhone) {
+	//	$scope.workPhone = $scope.applicant.userOccupation.workPhone;
+	//	$scope.workPhone = $scope.workPhone.slice(0, 7) + "-" + $scope.workPhone.slice(7);
+	//}
+	//if ($scope.applicant.authUser.authUserInfo.homePhone) {
+	//	$scope.auPhone = $scope.applicant.authUser.authUserInfo.homePhone;
+	//	$scope.auPhone = $scope.auPhone.slice(0, 7) + "-" + $scope.auPhone.slice(7);
+	//}
+
+	if ($scope.applicant.authUser) {
+		if ($scope.applicant.authUser.clientCardNum) $scope.showClientCard = true;
+		$scope.authUserRelationship = $scope.content.relationship[$scope.applicant.authUser.relationship];
+	}
+
+	$scope.application = DataFactory.appData.application;
+	$scope.showEmployment = $scope.application.apEmployment === "employed";
+
+	$scope.occupationDescription = $scope.localContent.employment_details.description
+	if ($scope.applicant.userOccupation.occupationId === "30") $scope.occupationDescription = $scope.localContent.employment_details.description_attache;
+	else if ($scope.applicant.userOccupation.occupationId === "54") $scope.occupationDescription = $scope.localContent.employment_details.description_business;
+
+	if ($scope.applicant.userOccupation.otherIncomeSource) $scope.otherIncomeSource = $scope.content.other_income[$scope.applicant.userOccupation.otherIncomeSource];
+
+	var occupation_id = $scope.applicant.userOccupation.occupationId;
+	$scope.showEducation = (occupation_id === "60" || occupation_id === "101" || occupation_id === "106" || occupation_id === "109" || occupation_id === "110" || occupation_id === "111" || occupation_id === "112" || occupation_id === "113");
+	if ($scope.showEducation) {
+		var occ = $scope.content.occupation_student;
+		occ["60"] = $rootScope.lang === "fr" ? "Étudiant/Enfant" : "Student/Child";
+		$scope.specialization = occ[$scope.applicant.userOccupation.occupationId];
+		$scope.fieldOfStudy = $scope.content.field_of_study[$scope.applicant.userEducation.fieldOfStudy];
+		$scope.schoolType = $scope.content.type_of_school[$scope.applicant.userEducation.schoolType];
+		$scope.educationLevel = $scope.content.level_of_education[$scope.applicant.userEducation.educationLevel];
+	}
+
+	$scope.$watch(function () {
+		return DataFactory.appData.applicant.additionalCardholderExist;
+	}, function (newVal, oldVal) {
+		if (newVal) $scope.showAuthorizedUser = newVal;
+	})
+
+	$scope.$watch(function () {
+		return DataFactory.appData.application
+	}, function (newVal, oldVal) {
+		if (newVal) $scope.application = newVal;
+	})
+
+	$scope.editStep = function (step) {
+		if (step === 'insurance') {
+			if (DataFactory.appData.applicant.product.pubCode === "westjet" || DataFactory.appData.applicant.product.pubCode === "westjet_world") {
+				step = 'westJet'
+			}
+			else if (DataFactory.appData.applicant.product.pubCode === "cp_platinum") {
+				step = 'asiaMiles';
+			}
+			else if (DataFactory.appData.applicant.product.pubCode === "ba_platinum") {
+				step = 'britishAirways';
+			}
+			else if ($rootScope.age >= 65 || incoming_pcode === "gold_us") {
+				step = 'identificationWord';
+			}
+		}
+		$rootScope.edit = true;
+		ScrollFactory.setActive(step);
+		$rootScope.currentStep = step;
+		$state.go('main', { 'hash': step });
+	}
+
+	$scope.nextStep = function () {
+		SubmitFactory.submitApp(SessionFactory.sessionId)
+			.then(
+        function (response) {
+            //response['result_content'].ProductModType = "Downsell";
+            //response['result_content'].RequestedProductCode = "IAV";
+            //response['result_content'].ApprovedProductCode = "IAV";
+            //response['result_content'].Status = "Pending";
+
+					if (response['result_content'].ProductModType === "NoChange") {
+						$rootScope.finalCardName = DataFactory.appData.product.name.replace(/<sup>[^<]*<\/sup>/g, "");
+						$rootScope.finalCardUrl = cc_mycard_url + "?c=" + DataFactory.appData.product.pubCode;
+						SessionFactory.deleteCurrentSession()
+						$state.go("thankYou");
+					}
+					else if ((response['result_content'].ProductModType === "Upsell" || response['result_content'].ProductModType === "U") && response['result_content'].ApprovedProductCode) {
+					ProductFactory.getProduct(SessionFactory.sessionId, ProductFactory.prodCodeToPubCode(response['result_content'].ApprovedProductCode))
+						.then(function (response) {
+							$state.go("upsell");
+						})
+					}
+					else if ((response['result_content'].ProductModType === "Downsell" || response['result_content'].ProductModType === "D") && response['result_content'].ApprovedProductCode) {
+						ProductFactory.getProduct(SessionFactory.sessionId, ProductFactory.prodCodeToPubCode(response['result_content'].ApprovedProductCode))
+						.then(function (response) {
+							$state.go("downsell");
+						})
+					}
+					else {
+						ErrorFactory.errorPage("SE-" + response['result_code'], $rootScope.lang, "Cardapp submit error", response['result_content']); 
+						return;
+					}
+				}
+			)
+		//ScrollFactory.lastVisibleStep("upsell");
+	}
+
+	$scope.prevStep = function () {
+		$rootScope.reviewBack = true;
+		if ($scope.showAuthorizedUser) {
+			ScrollFactory.setActive('authUserDetails2');
+			$rootScope.currentStep = 'authUserDetails2';
+			$state.go('main', { 'hash': 'authUserDetails2' });
+		}
+		else {
+			ScrollFactory.setActive('authUser');
+			$rootScope.currentStep = 'authUser';
+			$state.go('main', { 'hash': 'authUser' });
+		}
+	}
+}
+
+angular
+	.module('cardApp')
+	.controller('upsellCtrl', upsellCtrl);
+
+
+function upsellCtrl($scope, $rootScope, $state, ScrollFactory, DataFactory, SubmitFactory, SessionFactory) {
+	//if (!$rootScope.isLoaded) $state.go('main', { 'hash': 'intro' });
+	$rootScope.progressCurrent = 0;
+	$rootScope.progressMobCurrent = 0;
+	$rootScope.currentStep = "upsell";
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.result.upsell;
+	$scope.baseUrl = baseUrl;
+	$scope.product = DataFactory.appData.product;
+    $scope.modProduct = angular.extend(DataFactory.appData.modProduct.product, DataFactory.appData.modProduct.upsellInfo);
+	$scope.data = {};
+	$scope.data.userFulfillData = {};
+	$scope.data.userFulfillData.submitId = DataFactory.appData.submit.submitId;
+	//if ($scope.upsell.minPersonalIncome !== "0.00" || $scope.upsell.minHouseholdIncome !== "0.00") {
+	//	$scope.upsellMinWarning = true;
+	//}
+
+    //console.log("product", $scope.product);
+    //console.log("modProduct", $scope.modProduct);
+    $scope.upsellAccepted = "upsell-no";
+
+    //TODO: remove, just for testing
+    //if (!$scope.modProduct) {
+    //    $scope.modProduct = $scope.product;
+    //    DataFactory.appData.modProduct = DataFactory.appData.product;
+    //    DataFactory.appData.modProduct.minPersonalIncome = "30.00";
+    //    DataFactory.appData.modProduct.minHouseholdIncome = "30.00";
+    //}
+
+    $scope.modProductName = $scope.modProduct.name.replace(/<sup>[^<]*<\/sup>/g, "");
+
+    $scope.modProduct.add_card_fee = $scope.modProduct.add_card_fee.replace(".00", "");
+    $scope.product.add_card_fee = $scope.product.add_card_fee.replace(".00", "");
+
+		$scope.modProduct.cardArtHD = baseUrl + 'root/assets/images/cards/' + $scope.modProduct.productCode.toLowerCase() + "_" + incoming_lang + ".png"
+	//DEBUG doesn't need to be watched TODO remove
+	//$scope.$watch(function () {
+	//	return DataFactory.appData.product
+	//}, function (newValue, oldValue) {
+	//	$scope.product = newValue;
+	//	console.log($scope.product)
+	//});
+
+
+
+
+    //warnings
+    if ((DataFactory.appData.product.minPersonalIncome !== "0.00" && DataFactory.appData.product.minPersonalIncome) || (DataFactory.appData.product.minHouseholdIncome !== "0.00" && DataFactory.appData.product.minHouseholdIncome)) {
+        $scope.showMinWarning = true;
+				$scope.minPersonalIncome = Number(DataFactory.appData.product.minPersonalIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+				$scope.minHouseholdIncome = Number(DataFactory.appData.product.minHouseholdIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+        if (DataFactory.appData.product.minAssetIncome) {
+            $scope.showAssetWarning = true;
+						$scope.minAsset = Number(DataFactory.appData.product.minAssetIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+        }
+    }
+
+    if (($scope.modProduct.mpincome !== "0.00" && $scope.modProduct.mpincome) || ($scope.modProduct.mhincome !== "0.00" && $scope.modProduct.mhincome)) {
+        $scope.showUpsellMinWarning = true;
+				$scope.minUpsellPersonalIncome = Number($scope.modProduct.mpincome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+				$scope.minUpsellHouseholdIncome = Number($scope.modProduct.mhincome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+        if ($scope.modProduct.maincome) {
+            $scope.showUpsellAssetWarning = true;
+						$scope.minUpsellAsset = Number($scope.modProduct.maincome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+        }
+    }
+
+	$scope.nextStep = function (employment) {
+		if ($scope.upsellAccepted === "upsell-yes") {
+			$scope.data.userFulfillData.accepted = true;
+		}
+		else {
+			$scope.data.userFulfillData.accepted = false;
+		}
+		DataFactory.setData($scope.data)
+			.then(function (response) {
+				return SubmitFactory.submitFulfill(SessionFactory.sessionId)
+			})
+			.then(function (response) {
+				SessionFactory.deleteCurrentSession();
+				if (!$scope.data.userFulfillData.accepted) {
+					$rootScope.finalCardName = DataFactory.appData.product.name.replace(/<sup>[^<]*<\/sup>/g, "");
+					$rootScope.finalCardUrl = cc_mycard_url + "?c=" + DataFactory.appData.product.pubCode;
+				}
+				else {
+					$rootScope.finalCardName = $scope.modProduct.name.replace(/<sup>[^<]*<\/sup>/g, "");
+					$rootScope.cardNameStripped = $scope.modProduct.name.replace(/<sup>[^<]*<\/sup>/g, "");
+					$rootScope.finalCardUrl = cc_mycard_url + "?c=" + $scope.modProduct.pubCode;
+					$rootScope.nonameCardSrc = baseUrl + 'root/assets/images/cards_noname/' + $scope.modProduct.productCode.toLowerCase() + "_" + incoming_lang + ".png"
+				}
+				$state.go("thankYou");
+			})
+	}
+}
+
+angular
+	.module('cardApp')
+	.controller('downsellCtrl', downsellCtrl);
+
+
+function downsellCtrl($scope, $rootScope, $state, ScrollFactory, DataFactory, SubmitFactory, SessionFactory  ) {
+
+	//if (!$rootScope.isLoaded) $state.go('main', { 'hash': 'intro' });
+	$rootScope.progressCurrent = 0;
+	$rootScope.progressMobCurrent = 0;
+	$rootScope.currentStep = "downsell";
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.result.downsell;
+	$scope.data = {}
+	$scope.data.userFulfillData = {};
+    $scope.data.userFulfillData.submitId = DataFactory.appData.submit.submitId;
+
+    //$scope.modProduct = DataFactory.appData.modProduct;
+    $scope.modProduct = angular.extend(DataFactory.appData.modProduct.product, DataFactory.appData.modProduct.upsellInfo);
+
+    $scope.product = DataFactory.appData.product;
+
+    //TODO: remove, just for testing
+    //if (!$scope.modProduct) {
+    //    $scope.modProduct = $scope.product;
+    //    DataFactory.appData.modProduct = DataFactory.appData.product;
+    //    DataFactory.appData.modProduct.minPersonalIncome = "30.00";
+    //    DataFactory.appData.modProduct.minHouseholdIncome = "30.00";
+    //}
+
+    $scope.modProductName = $scope.modProduct.name.replace(/<sup>[^<]*<\/sup>/g, "");
+
+    $scope.modProduct.add_card_fee = $scope.modProduct.add_card_fee.replace(".00", "");
+    $scope.product.add_card_fee = $scope.product.add_card_fee.replace(".00", "");
+
+		$scope.modProduct.cardArtHD = baseUrl + 'root/assets/images/cards/' + $scope.modProduct.productCode.toLowerCase() + "_" + incoming_lang + ".png"
+
+    // if ((DataFactory.appData.product.minPersonalIncome !== "0.00" && DataFactory.appData.product.minPersonalIncome) || (DataFactory.appData.product.minHouseholdIncome !== "0.00" && DataFactory.appData.product.minHouseholdIncome)) {
+    //    $rootScope.showMinWarning = true;
+    //    $scope.minPersonalIncome = Number(DataFactory.appData.product.minPersonalIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" });
+    //    $scope.minHouseholdIncome = Number(DataFactory.appData.product.minHouseholdIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" });
+    //    if (DataFactory.appData.product.minAssetIncome) {
+    //        $scope.showAssetWarning = true;
+    //        $scope.minAsset = Number(DataFactory.appData.product.minAssetIncome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" });
+    //    }
+    //}
+
+    if (($scope.modProduct.mpincome !== "0.00" && $scope.modProduct.mpincome) || ($scope.modProduct.mhincome !== "0.00" && $scope.modProduct.mhincome)) {
+        $scope.showDownsellMinWarning = true;
+				$scope.minDownsellPersonalIncome = Number($scope.modProduct.mpincome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+				$scope.minDownsellHouseholdIncome = Number($scope.modProduct.mhincome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+        if ($scope.modProduct.maincome) {
+            $scope.showDownsellAssetWarning = true;
+						$scope.minDownsellAsset = Number($scope.modProduct.maincome).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" }).replace(/\D\d\d( \$)?$/, '');
+        }
+    }
+
+    $scope.nextStep = function (accepted) {
+
+		if (accepted) {
+			$scope.data.userFulfillData.accepted = true;
+		}
+		else {
+			$scope.data.userFulfillData.accepted = false;
+		}
+		DataFactory.setData($scope.data)
+			.then(function (response) {
+				return SubmitFactory.submitFulfill(SessionFactory.sessionId)
+			})
+			.then(function (response) {
+        SessionFactory.deleteCurrentSession();
+				if (!$scope.data.userFulfillData.accepted) {
+					DataFactory.appData.submit.Status = "Pending";
+					$rootScope.finalCardName = DataFactory.appData.product.name.replace(/<sup>[^<]*<\/sup>/g, "");
+					$rootScope.cardNameStripped = DataFactory.appData.product.name.replace(/<sup>[^<]*<\/sup>/g, "");
+					$rootScope.finalCardUrl = cc_mycard_url + "?c=" + DataFactory.appData.product.pubCode;
+				}
+				else {
+					$rootScope.finalCardName = $scope.modProduct.name.replace(/<sup>[^<]*<\/sup>/g, "");
+					$rootScope.cardNameStripped = $scope.modProduct.name.replace(/<sup>[^<]*<\/sup>/g, "");
+					$rootScope.finalCardUrl = cc_mycard_url + "?c=" + $scope.modProduct.pubCode;
+					$rootScope.nonameCardSrc = baseUrl + 'root/assets/images/cards_noname/' + $scope.modProduct.productCode.toLowerCase() + "_" + incoming_lang + ".png"
+				}
+				$state.go("thankYou");
+			})
+	}
+}
+
+angular
+	.module('cardApp')
+	.controller('thankYouCtrl', thankYouCtrl);
+
+
+function thankYouCtrl($scope, $rootScope, $state, $http, ScrollFactory, DataFactory, $window, $location) {
+	if (!$rootScope.isLoaded) {
+		$state.go('main', { 'hash': 'intro' });
+		$rootScope.currentStep = "intro";
+	}
+	$scope.$on('$locationChangeStart', function (event, next, current) {
+		if (next.indexOf('thankyou') === -1) {
+			event.preventDefault();
+			$window.location.reload();
+		}
+	});
+
+	$rootScope.progressCurrent = 0;
+	$rootScope.progressMobCurrent = 0;
+	$rootScope.currentStep = "thankYou";
+	$rootScope.submitId = DataFactory.appData.submit.SubmitRefId;
+	$rootScope.creditLimit = Number(DataFactory.appData.submit.CreditLimit).toLocaleString($rootScope.lang + "-CA", { style: "currency", currency: "CAD" });
+	$rootScope.cardDetails = DataFactory.appData.content.result.card_details;
+
+	var d = new Date();
+    $rootScope.currentDate = d.toLocaleString($rootScope.lang === 'fr' ? 'fr-CA' : 'en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
+	$scope.content = DataFactory.appData.content;
+	$scope.localContent = DataFactory.appData.content.result;
+	$scope.product = DataFactory.appData.product;
+	$scope.applicant = DataFactory.appData.applicant;
+
+	var s = $location.search().s;
+	//content chooser
+	if (DataFactory.appData.submit.Status === "Approved" || s === "approved") {
+		$rootScope.thankYouPageStatus = "approved";
+	} else if (DataFactory.appData.submit.Status === "Pending" || s === "pending") {
+		$rootScope.thankYouPageStatus = "pending";
+	} else {
+        $rootScope.thankYouPageStatus = "declined";
+	};
+
+	$scope.getPdf = getPdf;
+
+	function getPdf() {
+		var model = new Object();
+		model.file_name = "mypdf.pdf";
+		model.type = "PCA";
+		model.requires_data = true;
+		model.param = "data";
+		model.data = JSON.stringify({
+			"name": $scope.applicant.userInfo.firstName.charAt(0).toUpperCase() + $scope.applicant.userInfo.firstName.substr(1) + " " + $scope.applicant.userInfo.lastName,
+			"dob": $scope.applicant.userInfo.birthDay.toLocaleString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' }),
+			"addr_street": $scope.applicant.userCurrentAddress.streetNum + " " + $scope.applicant.userCurrentAddress.streetName,
+			"addr_city": $scope.applicant.userCurrentAddress.city,
+			"addr_prov": $scope.applicant.userCurrentAddress.province,
+			"addr_postal_code": $scope.applicant.userCurrentAddress.postalCode,
+			"card_type": $rootScope.finalCardName,
+			"ref_num": DataFactory.appData.submit.SubmitRefId,
+			"lang": $rootScope.lang
+		});
+
+        $http({
+            method: 'POST',
+            url: window.location.origin + '/uaw0/common-ws/pdf/postfromurl',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            responseType: "blob",
+            data: JSON.stringify(model)
+        }).then(function (response) {
+            var data = response.data;
+            if (response.status === 200) {
+                var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+                var blob = iOS ? new Blob([data], { type: 'application/pdf' }) : new Blob([data], { type: 'application/octet-stream' });
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement("a");
+                a.style.cssText = "display: none";
+                document.body.appendChild(a);
+                if (navigator.msSaveOrOpenBlob) {
+                    navigator.msSaveOrOpenBlob(blob, 'your_guide.pdf');
+                    return;
+                }
+                else if (window.navigator.msSaveBlob) { // for IE browser
+                    window.navigator.msSaveBlob(blob, 'your_guide.pdf');
+                    return;
+                }
+                a.href = url;
+                a.download = 'your_guide.pdf';
+                a.target = '_blank';
+                if (iOS) window.open(url);
+                else a.click();
+                window.URL.revokeObjectURL(url);
+            } else {
+                //handle any other status code responses here (in this case 404)
+                var sss = "";
+                var blob = new Blob([data], { type: 'application/json' });
+            }
+        }, function (httpError) {
+        });
+
+
+		//let xhr = new XMLHttpRequest();
+		//xhr.open('POST', window.location.origin + '/uaw0/common-ws/pdf/postfromurl');
+		//xhr.responseType = 'blob';
+		//xhr.setRequestHeader("Content-Type", "application/json");
+		//xhr.send(JSON.stringify(model));
+
+		//xhr.onload = function (e) {
+		//	console.log(this)
+		//	if (this.status == 200) {
+		//		var blob = new Blob([this.response], { type: 'application/octet-stream' });
+		//		let a = document.createElement("a");
+		//		a.style = "display: none";
+		//		document.body.appendChild(a);
+		//		let url = window.URL.createObjectURL(blob);
+		//		a.href = url;
+		//		a.download = 'your_guide.pdf';
+		//		a.target = '_blank';
+		//		a.click();
+		//		window.URL.revokeObjectURL(url);
+		//	} else {
+		//		//handle any other status code responses here (in this case 404)
+		//		var sss = "";
+		//		var blob = new Blob([this.response], { type: 'application/json' });
+		//		console.log(blob);
+		//	}
+		//};
+	}
+
+	$scope.print = function (print) {
+		$window.print();
+	};
+}
+
+(function () {
+
+	'use strict';
+
+	angular
+		.module('cardApp')
+		.controller('BranchCtrl', branch);
+
+	branch.$inject = ['$scope', '$state', '$http', '$q', 'BranchFactory', 'DataFactory', 'SessionFactory', '$rootScope'];
+
+	function branch($scope, $state, $http, $q, BranchFactory, DataFactory, SessionFactory, $rootScope) {
+
+
+		$scope.selectBranch = selectBranch;
+		$scope.search = search;
+		$scope.checkFocus = checkFocus;
+		$scope.showBranchSearch = false;
+		$scope.disableClosingSearch = false;
+		$scope.branchData = DataFactory.appData.branch;
+		$scope.contentDataBranch = DataFactory.appData.content["branch_locator"];
+
+		$scope.showResults = false;
+		$scope.noResults = false;
+		//$scope.lang = $rootScope.glContent.lang;
+		$scope.closeModalFocus = false;
+
+		function search(init) {
+
+			var deferred = $q.defer();
+			var promise = deferred.promise
+
+			$scope.noResults = false;
+			$scope.showResults = false;
+			$scope.loading = false;
+
+			promise
+				.then(
+				function () {
+					$scope.loading = true;
+					return BranchFactory.getBranch($scope.searchString, "10");
+				})
+				.then(
+				/*success*/
+				function (branches) {
+					$scope.branches = branches;
+					$scope.numBranches = branches.length;
+					$scope.numBranchesArray = []
+					for (var i = 0; i < branches.length; i++) {
+						$scope.numBranchesArray.push(i);
+					}
+
+					if (branches.length === 0) {
+						$scope.noResults = true;
+						$scope.loading = false;
+					}
+					else {
+						$scope.showResults = true;
+						$scope.loading = false;
+					}
+				},
+				/*error*/
+				function (e) {
+					$scope.noResults = true;
+					$scope.loading = false;
+					return $q.reject('Error at BranchFactory.getAltBranches(): ' + e)
+				})
+				.catch(function (e) {
+					//do nothing
+				});
+			deferred.resolve();
+		}
+
+		function selectBranch(number) {
+
+			$scope.branchData = $scope.branches[number];
+			DataFactory.appData.branch = $scope.branchData;
+			var branch = angular.copy($scope.branchData);
+            var userBranch = {
+                "userBranch": {
+                    "address": branch.addr1 + " " + branch.addr2,
+                    "city": branch.city,
+                    "province": branch.prov,
+                    "postalCode": branch.postal,
+                    "transit": branch.transit,
+                    "name": branch.name,
+                    "procCentral": branch.processing_centre
+                }
+			};
+            DataFactory.setData(userBranch);
+			$scope.showBranchSearch = false;
+		}
+
+		function checkFocus(last) {
+
+			if (!$scope.showResults || $scope.noResults) {
+				$scope.closeModalFocus = true;
+			}
+			else if ($scope.showResults && last) {
+				$scope.closeModalFocus = true;
+			}
+		}
+
+	}
+
+})();
+
+angular
+	.module('cardApp')
+	.controller('errorCtrl', errorCtrl);
+
+
+function errorCtrl($scope, $rootScope, $state, ScrollFactory, DataFactory, ErrorFactory) {
+	$rootScope.progressCurrent = 0;
+	$rootScope.progressMobCurrent = 0;
+
+	if (!$rootScope.isLoaded) {
+		$state.go('main', { 'hash': 'intro' });
+		$rootScope.currentStep = "intro";
+		//location.reload()
+	}
+	$rootScope.currentStep = 'error';
+	$scope.error = ErrorFactory.error;
+	$scope.content = DataFactory.appData.content.error;
+}
+
+angular
+	.module('cardApp')
+	.controller('errorProductCtrl', errorProductCtrl);
+
+
+function errorProductCtrl($scope, $rootScope, $state, ScrollFactory, DataFactory, ErrorFactory) {
+	$rootScope.progressCurrent = 0;
+	$rootScope.progressMobCurrent = 0;
+	$rootScope.currentStep = 'productError';
+	$scope.content = DataFactory.appData.content.error_product;
+	//$rootScope.$watch('currentStep', function (oldVal, newVal) {
+	//	console.log(oldVal, newVal);
+	//	if (newVal !== 'intro') console.trace();
+	//})
+}
+
+angular
+	.module('cardApp')
+	.controller('maintenanceCtrl', maintenanceCtrl);
+
+
+function maintenanceCtrl($scope, $rootScope, DataFactory) {
+	$rootScope.currentStep = 'error';
+	$scope.content = DataFactory.appData.content.maintenance;
+}
+
